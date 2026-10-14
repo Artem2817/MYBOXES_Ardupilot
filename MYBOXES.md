@@ -32,6 +32,16 @@ for Copter, Plane and Rover, firmware with the bootloader, the separate H743
 bootloader, a JSON manifest and SHA-256 checksums. The Pro set also contains
 IOMCU `.bin`, `.apj` and `.hex` files.
 
+## Automatic validation
+
+The **Validate MYBOXES firmware** workflow runs automatically for every push to
+`main` and for every pull request. It builds Mini and Pro in parallel, including
+the Pro IOMCU, and verifies that the packaged manifest and checksum list were
+created. Validation runs never create or update GitHub Releases.
+
+If a newer commit is pushed to the same branch, the older validation run is
+cancelled so that GitHub only spends time checking the latest revision.
+
 ## GitHub Releases
 
 Open **Actions** and choose the workflow for the required board:

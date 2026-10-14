@@ -1,0 +1,56 @@
+name: Validate MYBOXES firmware
+run-name: Validate Mini and Pro — ${{ github.event_name }}
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Validate ${{ matrix.board }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    container: ardupilot/ardupilot-dev-chibios:v0.1.3
+    strategy:
+      fail-fast: false
+      matrix:
+        board:
+          - MyboxH743_mini
+          - MyboxH743_pro
+    env:
+      BUILD_LABEL: ci-${{ github.sha }}
+    steps:
+      - name: Check out source and submodules
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Trust the checked-out repository in the build container
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Install firmware packaging tool
+        run: python3 -m pip install --disable-pip-version-check intelhex==2.3.0
+
+      - name: Build and package all firmware variants
+        run: >-
+          python3 Tools/scripts/build_myboxes_release.py
+          --board "${{ matrix.board }}"
+          --label "$BUILD_LABEL"
+          --output-dir "validation/${{ matrix.board }}"
+
+      - name: Verify packaged files
+        shell: bash
+        run: |
+          test -s "validation/${{ matrix.board }}/${{ matrix.board }}-$BUILD_LABEL-manifest.json"
+          test -s "validation/${{ matrix.board }}/${{ matrix.board }}-$BUILD_LABEL-SHA256SUMS.txt"
