@@ -1,0 +1,90 @@
+name: Build MYBOXES firmware release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, for example firmware-4.7.1-r1"
+        required: true
+        default: "firmware-4.7.1-r1"
+        type: string
+      prerelease:
+        description: "Mark the release as a pre-release"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.board }}
+    runs-on: ubuntu-latest
+    container: ardupilot/ardupilot-dev-chibios:v0.1.3
+    strategy:
+      fail-fast: false
+      matrix:
+        board:
+          - MyboxH743_mini
+    steps:
+      - name: Check out source and submodules
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Build release files
+        run: >-
+          python3 Tools/scripts/build_myboxes_release.py
+          --board "${{ matrix.board }}"
+          --label "${{ inputs.tag }}"
+          --output-dir "release/${{ matrix.board }}"
+
+      - name: Upload build result
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ matrix.board }}
+          path: release/${{ matrix.board }}/
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download firmware files
+        uses: actions/download-artifact@v4
+        with:
+          pattern: firmware-*
+          path: release
+          merge-multiple: true
+
+      - name: Create or update release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+          IS_PRERELEASE: ${{ inputs.prerelease }}
+        run: |
+          mapfile -d '' files < <(find release -type f -print0 | sort -z)
+          if (( ${#files[@]} == 0 )); then
+            echo "No release files were downloaded" >&2
+            exit 1
+          fi
+
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "${files[@]}" --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            prerelease_args=()
+            if [[ "$IS_PRERELEASE" == "true" ]]; then
+              prerelease_args+=(--prerelease)
+            fi
+            gh release create "$RELEASE_TAG" "${files[@]}" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "MYBOXES firmware $RELEASE_TAG" \
+              --generate-notes \
+              "${prerelease_args[@]}"
+          fi
