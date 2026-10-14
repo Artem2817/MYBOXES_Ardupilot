@@ -37,6 +37,9 @@ jobs:
       - name: Trust the checked-out repository in the build container
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
+      - name: Install firmware packaging tool
+        run: python3 -m pip install --disable-pip-version-check intelhex==2.3.0
+
       - name: Build release files
         run: >-
           python3 Tools/scripts/build_myboxes_release.py
