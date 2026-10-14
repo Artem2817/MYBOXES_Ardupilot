@@ -5,13 +5,12 @@ definitions used for MYBOXES flight controllers.
 
 ## Supported builds
 
-| Board | Copter | Plane | Rover |
-| --- | :---: | :---: | :---: |
-| `MyboxH743_mini` | yes | yes | yes |
+| Board | Copter | Plane | Rover | IOMCU |
+| --- | :---: | :---: | :---: | :---: |
+| `MyboxH743_mini` | yes | yes | yes | no |
+| `MyboxH743_pro` | yes | yes | yes | STM32F103, 8 MHz, high polarity |
 
-The authoritative target list is `CustomBoards/targets.json`. Add another board
-to that file and to the matrix in
-`.github/workflows/myboxes-firmware-release.yml` when a new hwdef is ready.
+The authoritative target list is `CustomBoards/targets.json`.
 
 ## Local build in WSL
 
@@ -24,16 +23,27 @@ python3 Tools/scripts/build_myboxes_release.py \
   --label local-test
 ```
 
-The result is written to `dist/local-test/MyboxH743_mini/`. Each set contains
-firmware for Copter, Plane and Rover, firmware with the bootloader, the separate
-bootloader, a JSON manifest and SHA-256 checksums.
+For the Pro board, replace `MyboxH743_mini` with `MyboxH743_pro`. The Pro
+build first builds its IOMCU firmware, copies it into the H743 firmware image,
+then builds Copter, Plane and Rover.
+
+The result is written to `dist/<label>/<board>/`. Each set contains firmware
+for Copter, Plane and Rover, firmware with the bootloader, the separate H743
+bootloader, a JSON manifest and SHA-256 checksums. The Pro set also contains
+IOMCU `.bin`, `.apj` and `.hex` files.
 
 ## GitHub Releases
 
-Open **Actions**, choose **Build MYBOXES firmware release**, press **Run
-workflow**, enter a unique tag such as `firmware-4.7.1-r1`, and start it. The
-workflow builds every board in its matrix and creates a GitHub Release. Running
-the same tag again replaces its attached files after a successful rebuild.
+Open **Actions**, choose **Build MYBOXES firmware release**, and press **Run
+workflow**. Choose exactly one board and enter a unique tag. Use separate tags,
+for example:
+
+- `myboxh743-mini-4.7.1-r1`
+- `myboxh743-pro-4.7.1-r1`
+
+Every workflow run builds and publishes one board, so Mini and Pro always have
+separate GitHub Releases. Running the same board and tag again replaces that
+release's attached files after a successful rebuild.
 
 Keep development builds marked as pre-releases. Clear that option only after
 the firmware has been tested on hardware.
@@ -45,10 +55,11 @@ the firmware has been tested on hardware.
 2. Give the board a symbolic ID in `Tools/AP_Bootloader/board_types.txt` and use
    that symbol in both hwdef files. GitHub Actions rejects a raw numeric ID.
 3. Add the board and required vehicle types to `CustomBoards/targets.json`.
-4. Add the board name to the workflow matrix.
+4. If the board has an IOMCU, add its build board, polarity variant and embedded
+   firmware path to that target entry.
 5. Build locally, flash the `*-with-bootloader.hex` image for the first install,
    and verify power, receiver input, sensors and every assigned output.
 
-The current `MyboxH743_mini` ID is private to this repository. Reserve a board
-ID with the ArduPilot project before publishing it as a generally distributed
-third-party board.
+The MYBOXES board IDs are private to this repository. Reserve board IDs with
+the ArduPilot project before publishing them as generally distributed
+third-party boards.

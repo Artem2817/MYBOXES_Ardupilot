@@ -386,6 +386,7 @@ AP_HW_LongbowF405                    1422
 
 AP_HW_ResoluteH7                     1445
 AP_HW_MYBOXH743_MINI                1478
+AP_HW_MYBOXH743_PRO                 1488
 
 AP_HW_StellarF4                      1500
 AP_HW_GEPRCF745BTHD                  1501

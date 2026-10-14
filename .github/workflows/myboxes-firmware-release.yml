@@ -1,12 +1,21 @@
 name: Build MYBOXES firmware release
+run-name: Build ${{ inputs.board }} — ${{ inputs.tag }}
 
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Release tag, for example firmware-4.7.1-r1"
+      board:
+        description: "Flight controller"
         required: true
-        default: "firmware-4.7.1-r1"
+        default: "MyboxH743_mini"
+        type: choice
+        options:
+          - MyboxH743_mini
+          - MyboxH743_pro
+      tag:
+        description: "Unique release tag, for example myboxh743-mini-4.7.1-r1"
+        required: true
+        default: "myboxh743-mini-4.7.1-r1"
         type: string
       prerelease:
         description: "Mark the release as a pre-release"
@@ -19,14 +28,12 @@ permissions:
 
 jobs:
   build:
-    name: Build ${{ matrix.board }}
+    name: Build ${{ inputs.board }}
     runs-on: ubuntu-latest
     container: ardupilot/ardupilot-dev-chibios:v0.1.3
-    strategy:
-      fail-fast: false
-      matrix:
-        board:
-          - MyboxH743_mini
+    env:
+      RELEASE_BOARD: ${{ inputs.board }}
+      RELEASE_TAG: ${{ inputs.tag }}
     steps:
       - name: Check out source and submodules
         uses: actions/checkout@v6
@@ -43,36 +50,36 @@ jobs:
       - name: Build release files
         run: >-
           python3 Tools/scripts/build_myboxes_release.py
-          --board "${{ matrix.board }}"
-          --label "${{ inputs.tag }}"
-          --output-dir "release/${{ matrix.board }}"
+          --board "$RELEASE_BOARD"
+          --label "$RELEASE_TAG"
+          --output-dir "release/$RELEASE_BOARD"
 
       - name: Upload build result
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-${{ matrix.board }}
-          path: release/${{ matrix.board }}/
+          name: firmware-${{ inputs.board }}
+          path: release/${{ inputs.board }}/
           if-no-files-found: error
           retention-days: 14
 
   release:
-    name: Publish GitHub Release
+    name: Publish ${{ inputs.board }} release
     needs: build
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_BOARD: ${{ inputs.board }}
+      RELEASE_TAG: ${{ inputs.tag }}
+      IS_PRERELEASE: ${{ inputs.prerelease }}
     steps:
       - name: Download firmware files
         uses: actions/download-artifact@v4
         with:
-          pattern: firmware-*
+          name: firmware-${{ inputs.board }}
           path: release
-          merge-multiple: true
 
       - name: Create or update release
         shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ inputs.tag }}
-          IS_PRERELEASE: ${{ inputs.prerelease }}
         run: |
           mapfile -d '' files < <(find release -type f -print0 | sort -z)
           if (( ${#files[@]} == 0 )); then
@@ -90,7 +97,7 @@ jobs:
             gh release create "$RELEASE_TAG" "${files[@]}" \
               --repo "$GITHUB_REPOSITORY" \
               --target "$GITHUB_SHA" \
-              --title "MYBOXES firmware $RELEASE_TAG" \
+              --title "$RELEASE_BOARD firmware $RELEASE_TAG" \
               --generate-notes \
               "${prerelease_args[@]}"
           fi

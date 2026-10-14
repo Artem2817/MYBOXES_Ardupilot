@@ -12,6 +12,7 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -57,12 +58,62 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def build_board(board: str, vehicles: list[str], output: Path, label: str) -> None:
+def build_iomcu(
+    board: str,
+    iomcu: dict[str, str],
+    output: Path,
+    label: str,
+) -> dict[str, str]:
+    iomcu_board = iomcu["board"]
+    variant = iomcu["variant"]
+    embedded_path = ROOT / iomcu["embedded_path"]
+
+    run("./waf", "configure", "--board", iomcu_board)
+    run("./waf", "iofirmware")
+
+    build_dir = ROOT / "build" / iomcu_board / "bin"
+    firmware_stem = f"iofirmware_{variant}"
+    firmware_bin = build_dir / f"{firmware_stem}.bin"
+    copy_required(firmware_bin, embedded_path)
+
+    release_prefix = f"{board}-iomcu-{iomcu_board}-{variant}-{label}"
+    copy_required(firmware_bin, output / f"{release_prefix}.bin")
+    copy_required(
+        build_dir / f"{firmware_stem}.apj",
+        output / f"{release_prefix}.apj",
+    )
+    copy_required(
+        build_dir / f"{firmware_stem}_with_bl.hex",
+        output / f"{release_prefix}-with-bootloader.hex",
+    )
+
+    return {
+        "board": iomcu_board,
+        "variant": variant,
+        "embedded_path": str(embedded_path.relative_to(ROOT)),
+    }
+
+
+def build_board(
+    board: str,
+    board_config: dict[str, Any],
+    output: Path,
+    label: str,
+) -> None:
     hwdef_dir = ROOT / "libraries" / "AP_HAL_ChibiOS" / "hwdef" / board
     if not hwdef_dir.is_dir():
         raise FileNotFoundError(f"unknown board: {board}")
 
+    source_commit = git_output("rev-parse", "HEAD")
+    source_description = git_output("describe", "--tags", "--always")
+    vehicles = board_config["vehicles"]
+
     output.mkdir(parents=True, exist_ok=True)
+    iomcu_manifest = None
+    iomcu_config = board_config.get("iomcu")
+    if iomcu_config is not None:
+        iomcu_manifest = build_iomcu(board, iomcu_config, output, label)
+
     run(sys.executable, "Tools/scripts/build_bootloaders.py", board)
     run("./waf", "configure", "--board", board)
 
@@ -95,8 +146,9 @@ def build_board(board: str, vehicles: list[str], output: Path, label: str) -> No
         "release": label,
         "board": board,
         "vehicles": vehicles,
-        "git_commit": git_output("rev-parse", "HEAD"),
-        "git_description": git_output("describe", "--tags", "--always", "--dirty"),
+        "iomcu": iomcu_manifest,
+        "git_commit": source_commit,
+        "git_description": source_description,
         "built_at_utc": datetime.now(timezone.utc).isoformat(),
         "files": [
             {
@@ -132,7 +184,7 @@ def main() -> None:
 
     label = safe_label(args.label)
     output = args.output_dir or ROOT / "dist" / label / args.board
-    build_board(args.board, board_config["vehicles"], output.resolve(), label)
+    build_board(args.board, board_config, output.resolve(), label)
 
 
 if __name__ == "__main__":

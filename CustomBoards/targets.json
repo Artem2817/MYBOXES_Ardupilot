@@ -6,6 +6,18 @@
         "plane",
         "rover"
       ]
+    },
+    "MyboxH743_pro": {
+      "vehicles": [
+        "copter",
+        "plane",
+        "rover"
+      ],
+      "iomcu": {
+        "board": "iomcu_f103_8MHz",
+        "variant": "highpolh",
+        "embedded_path": "Tools/IO_Firmware/iofirmware_f103_8MHz_highpolh.bin"
+      }
     }
   }
 }
