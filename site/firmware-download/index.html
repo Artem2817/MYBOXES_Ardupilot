@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080b12" />
+    <meta
+      name="description"
+      content="Каталог прошивок ArduPilot для полётных контроллеров MYBOXES H743"
+    />
+    <title>MYBOXES Firmware</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="background-grid" aria-hidden="true"></div>
+    <header class="hero shell">
+      <nav class="nav" aria-label="Основная навигация">
+        <a class="brand" href="./" aria-label="MYBOXES Firmware — главная">
+          <span class="brand-mark">M</span>
+          <span>
+            <strong>MYBOXES</strong>
+            <small>FIRMWARE LAB</small>
+          </span>
+        </a>
+        <a class="repo-link" id="repo-link" href="#" target="_blank" rel="noreferrer">
+          GitHub
+          <span aria-hidden="true">↗</span>
+        </a>
+      </nav>
+
+      <div class="hero-content">
+        <div>
+          <p class="eyebrow"><span></span> OFFICIAL FLIGHT STACK</p>
+          <h1>Прошивка без<br /><em>угадывания файлов.</em></h1>
+          <p class="hero-copy">
+            Выберите плату и тип аппарата. Каталог покажет совместимые образы,
+            загрузчик и IO firmware из проверенных GitHub Releases.
+          </p>
+        </div>
+        <div class="telemetry" aria-label="Статистика каталога">
+          <div class="telemetry-row">
+            <span>ПЛАТФОРМА</span>
+            <strong>ARDUPILOT</strong>
+          </div>
+          <div class="telemetry-row">
+            <span>АРХИТЕКТУРА</span>
+            <strong>STM32H743</strong>
+          </div>
+          <div class="telemetry-row">
+            <span>РЕЛИЗОВ</span>
+            <strong id="release-count">—</strong>
+          </div>
+          <div class="pulse-line"><i></i></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="shell">
+      <section class="selector-panel" aria-labelledby="selector-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-number">01 / ВЫБОР ПРОШИВКИ</p>
+            <h2 id="selector-title">Что будем прошивать?</h2>
+          </div>
+          <p class="catalog-time" id="catalog-time">Обновляем каталог…</p>
+        </div>
+
+        <div class="board-switch" role="group" aria-label="Полётный контроллер">
+          <button class="board-button active" type="button" data-board="mini">
+            <span class="board-icon">M</span>
+            <span><strong>MyboxH743 Mini</strong><small>Основной контроллер</small></span>
+          </button>
+          <button class="board-button" type="button" data-board="pro">
+            <span class="board-icon">P</span>
+            <span><strong>MyboxH743 Pro</strong><small>H743 + STM32F103 IOMCU</small></span>
+          </button>
+        </div>
+
+        <div class="filters">
+          <label>
+            <span>Тип аппарата</span>
+            <select id="vehicle-select">
+              <option value="copter">Copter</option>
+              <option value="plane">Plane</option>
+              <option value="rover">Rover</option>
+            </select>
+          </label>
+          <label>
+            <span>Канал</span>
+            <select id="channel-select">
+              <option value="all">Все каналы</option>
+              <option value="stable">Stable</option>
+              <option value="beta">Beta</option>
+              <option value="dev">Dev</option>
+            </select>
+          </label>
+          <label>
+            <span>Версия</span>
+            <select id="version-select">
+              <option value="latest">Последняя подходящая</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="results" aria-live="polite" aria-busy="true">
+        <div id="loading" class="status-card">
+          <div class="loader"></div>
+          <div><strong>Читаем Releases</strong><span>Собираем совместимые файлы…</span></div>
+        </div>
+        <div id="error" class="status-card error" hidden></div>
+        <div id="release-list"></div>
+      </section>
+
+      <section class="format-guide" aria-labelledby="guide-title">
+        <div class="section-heading compact">
+          <div>
+            <p class="section-number">02 / ФОРМАТЫ</p>
+            <h2 id="guide-title">Какой файл выбирать?</h2>
+          </div>
+        </div>
+        <div class="guide-grid">
+          <article><span class="format apj">APJ</span><h3>Обычное обновление</h3><p>Загружайте через Mission Planner, QGroundControl или веб-загрузчик ArduPilot.</p></article>
+          <article><span class="format bin">BIN</span><h3>Чистый бинарник</h3><p>Для программатора, собственного загрузчика или точной записи по адресу.</p></article>
+          <article><span class="format hex">HEX</span><h3>Первая прошивка</h3><p>Образ с загрузчиком для STM32CubeProgrammer, DFU или SWD.</p></article>
+        </div>
+      </section>
+
+      <aside class="private-note" id="private-note" hidden>
+        <span aria-hidden="true">🔒</span>
+        <div><strong>Приватный каталог</strong><p>Для скачивания GitHub может попросить войти в аккаунт с доступом к репозиторию.</p></div>
+      </aside>
+    </main>
+
+    <footer class="shell footer">
+      <span>MYBOXES / ARDUPILOT</span>
+      <span>Собрано автоматически из GitHub Releases</span>
+    </footer>
+
+    <template id="release-template">
+      <article class="release-card">
+        <header class="release-header">
+          <div>
+            <div class="release-meta"><span class="channel-badge"></span><span class="release-date"></span></div>
+            <h2 class="release-title"></h2>
+            <code class="release-tag"></code>
+          </div>
+          <a class="release-link" target="_blank" rel="noreferrer">Release ↗</a>
+        </header>
+        <div class="download-section vehicle-downloads"></div>
+        <div class="component-grid"></div>
+      </article>
+    </template>
+
+    <script src="app.js" defer></script>
+  </body>
+</html>

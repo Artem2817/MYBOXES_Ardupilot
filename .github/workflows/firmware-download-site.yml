@@ -1,0 +1,68 @@
+name: Deploy firmware download page
+run-name: Refresh firmware download page
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/firmware-download-site.yml
+      - Tools/scripts/build_firmware_site.py
+      - site/firmware-download/**
+  workflow_run:
+    workflows:
+      - Build MyboxH743 Mini release
+      - Build MyboxH743 Pro + IOMCU release
+    types:
+      - completed
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build firmware catalog
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the latest main branch
+        uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - name: Generate catalog from GitHub Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python3 Tools/scripts/build_firmware_site.py
+          --repository "$GITHUB_REPOSITORY"
+          --source site/firmware-download
+          --output _site
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload firmware site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    name: Publish firmware page
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

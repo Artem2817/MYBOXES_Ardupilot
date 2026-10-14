@@ -3,6 +3,16 @@
 This repository contains the ArduPilot source snapshot and custom hardware
 definitions used for MYBOXES flight controllers.
 
+## Firmware downloads
+
+The public firmware catalog is available at:
+
+**https://artem2817.github.io/MYBOXES_Ardupilot/**
+
+It lists versioned Mini and Pro releases and provides direct downloads for
+Copter, Plane, Rover, H743 bootloaders and the Pro IOMCU. The catalog is rebuilt
+automatically after either release workflow completes successfully.
+
 ## Supported builds
 
 | Board | Copter | Plane | Rover | IOMCU |
