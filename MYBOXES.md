@@ -50,18 +50,25 @@ Open **Actions** and choose the workflow for the required board:
 - **Build MyboxH743 Pro + IOMCU release** first builds the STM32F103 IOMCU,
   then embeds it and builds Pro Copter, Plane and Rover.
 
-Press **Run workflow** and enter a unique tag, for example:
+Press **Run workflow** and select:
 
-- `myboxh743-mini-4.7.1-r1`
-- `myboxh743-pro-4.7.1-r1`
+- the ArduPilot source version, for example `4.7.1`;
+- the MYBOXES revision number, for example `2`;
+- the release channel: `dev`, `beta` or `stable`.
+
+The workflow validates the values and creates the tag automatically:
+
+- `myboxh743-mini-4.7.1-r2-dev`
+- `myboxh743-pro-4.7.1-r2-beta`
+- `myboxh743-pro-4.7.1-r2` for a stable release
 
 Mini and Pro always have separate GitHub Releases. The IOMCU stays in the Pro
 release so the H743 and STM32F103 firmware always come from the same source
-commit. Running the same tag again replaces that release's attached files after
-a successful rebuild.
+commit. Development and beta builds are marked as pre-releases. Stable builds
+are normal GitHub Releases and become the latest stable version.
 
-Keep development builds marked as pre-releases. Clear that option only after
-the firmware has been tested on hardware.
+Published version tags are immutable. If a tag already exists, the workflow
+stops and asks for a higher revision instead of replacing tested firmware.
 
 ## Adding a board
 

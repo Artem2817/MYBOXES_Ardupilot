@@ -1,31 +1,78 @@
 name: Build MyboxH743 Pro + IOMCU release
-run-name: Pro + IOMCU — ${{ inputs.tag }}
+run-name: Pro + IOMCU — ${{ inputs.version }}-r${{ inputs.revision }} (${{ inputs.channel }})
 
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Unique Pro release tag"
+      version:
+        description: "ArduPilot source version"
         required: true
-        default: "myboxh743-pro-4.7.1-r2"
+        default: "4.7.1"
         type: string
-      prerelease:
-        description: "Mark the release as a pre-release"
+      revision:
+        description: "MYBOXES release revision number"
         required: true
-        default: true
-        type: boolean
+        default: "2"
+        type: string
+      channel:
+        description: "Release channel"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - beta
+          - stable
 
 permissions:
   contents: write
 
 jobs:
+  prepare:
+    name: Prepare Pro version
+    runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.version.outputs.tag }}
+      release_title: ${{ steps.version.outputs.title }}
+      is_prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - name: Validate version and reserve tag
+        id: version
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+          REVISION: ${{ inputs.revision }}
+          CHANNEL: ${{ inputs.channel }}
+        run: |
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Version must look like 4.7.1" >&2
+            exit 1
+          fi
+          if [[ ! "$REVISION" =~ ^[1-9][0-9]*$ ]]; then
+            echo "Revision must be a positive number" >&2
+            exit 1
+          fi
+          suffix=""
+          prerelease="false"
+          if [[ "$CHANNEL" != "stable" ]]; then
+            suffix="-$CHANNEL"
+            prerelease="true"
+          fi
+          tag="myboxh743-pro-$VERSION-r$REVISION$suffix"
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $tag already exists. Increase the revision." >&2
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "title=MyboxH743_pro + IOMCU $VERSION-r$REVISION ($CHANNEL)" >> "$GITHUB_OUTPUT"
+          echo "prerelease=$prerelease" >> "$GITHUB_OUTPUT"
+
   build:
     name: Build Pro and its IOMCU
+    needs: prepare
     runs-on: ubuntu-latest
     container: ardupilot/ardupilot-dev-chibios:v0.1.3
-    env:
-      RELEASE_BOARD: MyboxH743_pro
-      RELEASE_TAG: ${{ inputs.tag }}
     steps:
       - name: Check out source and submodules
         uses: actions/checkout@v6
@@ -45,6 +92,9 @@ jobs:
           ./waf iofirmware
 
       - name: Build Pro Copter, Plane and Rover firmware
+        env:
+          RELEASE_BOARD: MyboxH743_pro
+          RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
         run: >-
           python3 Tools/scripts/build_myboxes_release.py
           --board "$RELEASE_BOARD"
@@ -62,13 +112,15 @@ jobs:
 
   release:
     name: Publish Pro + IOMCU release
-    needs: build
+    needs:
+      - prepare
+      - build
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
-      RELEASE_BOARD: MyboxH743_pro
-      RELEASE_TAG: ${{ inputs.tag }}
-      IS_PRERELEASE: ${{ inputs.prerelease }}
+      RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
+      RELEASE_TITLE: ${{ needs.prepare.outputs.release_title }}
+      IS_PRERELEASE: ${{ needs.prepare.outputs.is_prerelease }}
     steps:
       - name: Download Pro and IOMCU firmware files
         uses: actions/download-artifact@v4
@@ -76,7 +128,7 @@ jobs:
           name: firmware-MyboxH743_pro
           path: release
 
-      - name: Create or update Pro release
+      - name: Create immutable Pro release
         shell: bash
         run: |
           mapfile -d '' files < <(find release -type f -print0 | sort -z)
@@ -86,16 +138,17 @@ jobs:
           fi
 
           if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            gh release upload "$RELEASE_TAG" "${files[@]}" --clobber --repo "$GITHUB_REPOSITORY"
-          else
-            prerelease_args=()
-            if [[ "$IS_PRERELEASE" == "true" ]]; then
-              prerelease_args+=(--prerelease)
-            fi
-            gh release create "$RELEASE_TAG" "${files[@]}" \
-              --repo "$GITHUB_REPOSITORY" \
-              --target "$GITHUB_SHA" \
-              --title "$RELEASE_BOARD + IOMCU firmware $RELEASE_TAG" \
-              --generate-notes \
-              "${prerelease_args[@]}"
+            echo "Release $RELEASE_TAG already exists. Increase the revision." >&2
+            exit 1
           fi
+
+          prerelease_args=()
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
+            prerelease_args+=(--prerelease)
+          fi
+          gh release create "$RELEASE_TAG" "${files[@]}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "$RELEASE_TITLE" \
+            --generate-notes \
+            "${prerelease_args[@]}"
