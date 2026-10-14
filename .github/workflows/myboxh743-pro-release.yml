@@ -1,21 +1,13 @@
-name: Build MYBOXES firmware release
-run-name: Build ${{ inputs.board }} — ${{ inputs.tag }}
+name: Build MyboxH743 Pro + IOMCU release
+run-name: Pro + IOMCU — ${{ inputs.tag }}
 
 on:
   workflow_dispatch:
     inputs:
-      board:
-        description: "Flight controller"
-        required: true
-        default: "MyboxH743_mini"
-        type: choice
-        options:
-          - MyboxH743_mini
-          - MyboxH743_pro
       tag:
-        description: "Unique release tag, for example myboxh743-mini-4.7.1-r1"
+        description: "Unique Pro release tag"
         required: true
-        default: "myboxh743-mini-4.7.1-r1"
+        default: "myboxh743-pro-4.7.1-r2"
         type: string
       prerelease:
         description: "Mark the release as a pre-release"
@@ -28,11 +20,11 @@ permissions:
 
 jobs:
   build:
-    name: Build ${{ inputs.board }}
+    name: Build Pro and its IOMCU
     runs-on: ubuntu-latest
     container: ardupilot/ardupilot-dev-chibios:v0.1.3
     env:
-      RELEASE_BOARD: ${{ inputs.board }}
+      RELEASE_BOARD: MyboxH743_pro
       RELEASE_TAG: ${{ inputs.tag }}
     steps:
       - name: Check out source and submodules
@@ -47,38 +39,44 @@ jobs:
       - name: Install firmware packaging tool
         run: python3 -m pip install --disable-pip-version-check intelhex==2.3.0
 
-      - name: Build release files
+      - name: Build STM32F103 IOMCU firmware
+        run: |
+          ./waf configure --board iomcu_f103_8MHz
+          ./waf iofirmware
+
+      - name: Build Pro Copter, Plane and Rover firmware
         run: >-
           python3 Tools/scripts/build_myboxes_release.py
           --board "$RELEASE_BOARD"
           --label "$RELEASE_TAG"
           --output-dir "release/$RELEASE_BOARD"
+          --use-prebuilt-iomcu
 
-      - name: Upload build result
+      - name: Upload Pro and IOMCU build result
         uses: actions/upload-artifact@v4
         with:
-          name: firmware-${{ inputs.board }}
-          path: release/${{ inputs.board }}/
+          name: firmware-MyboxH743_pro
+          path: release/MyboxH743_pro/
           if-no-files-found: error
           retention-days: 14
 
   release:
-    name: Publish ${{ inputs.board }} release
+    name: Publish Pro + IOMCU release
     needs: build
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
-      RELEASE_BOARD: ${{ inputs.board }}
+      RELEASE_BOARD: MyboxH743_pro
       RELEASE_TAG: ${{ inputs.tag }}
       IS_PRERELEASE: ${{ inputs.prerelease }}
     steps:
-      - name: Download firmware files
+      - name: Download Pro and IOMCU firmware files
         uses: actions/download-artifact@v4
         with:
-          name: firmware-${{ inputs.board }}
+          name: firmware-MyboxH743_pro
           path: release
 
-      - name: Create or update release
+      - name: Create or update Pro release
         shell: bash
         run: |
           mapfile -d '' files < <(find release -type f -print0 | sort -z)
@@ -97,7 +95,7 @@ jobs:
             gh release create "$RELEASE_TAG" "${files[@]}" \
               --repo "$GITHUB_REPOSITORY" \
               --target "$GITHUB_SHA" \
-              --title "$RELEASE_BOARD firmware $RELEASE_TAG" \
+              --title "$RELEASE_BOARD + IOMCU firmware $RELEASE_TAG" \
               --generate-notes \
               "${prerelease_args[@]}"
           fi

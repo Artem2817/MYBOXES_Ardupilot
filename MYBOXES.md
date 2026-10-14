@@ -34,16 +34,21 @@ IOMCU `.bin`, `.apj` and `.hex` files.
 
 ## GitHub Releases
 
-Open **Actions**, choose **Build MYBOXES firmware release**, and press **Run
-workflow**. Choose exactly one board and enter a unique tag. Use separate tags,
-for example:
+Open **Actions** and choose the workflow for the required board:
+
+- **Build MyboxH743 Mini release** builds Mini Copter, Plane and Rover.
+- **Build MyboxH743 Pro + IOMCU release** first builds the STM32F103 IOMCU,
+  then embeds it and builds Pro Copter, Plane and Rover.
+
+Press **Run workflow** and enter a unique tag, for example:
 
 - `myboxh743-mini-4.7.1-r1`
 - `myboxh743-pro-4.7.1-r1`
 
-Every workflow run builds and publishes one board, so Mini and Pro always have
-separate GitHub Releases. Running the same board and tag again replaces that
-release's attached files after a successful rebuild.
+Mini and Pro always have separate GitHub Releases. The IOMCU stays in the Pro
+release so the H743 and STM32F103 firmware always come from the same source
+commit. Running the same tag again replaces that release's attached files after
+a successful rebuild.
 
 Keep development builds marked as pre-releases. Clear that option only after
 the firmware has been tested on hardware.

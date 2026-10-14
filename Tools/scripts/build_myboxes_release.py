@@ -63,13 +63,15 @@ def build_iomcu(
     iomcu: dict[str, str],
     output: Path,
     label: str,
+    compile_firmware: bool,
 ) -> dict[str, str]:
     iomcu_board = iomcu["board"]
     variant = iomcu["variant"]
     embedded_path = ROOT / iomcu["embedded_path"]
 
-    run("./waf", "configure", "--board", iomcu_board)
-    run("./waf", "iofirmware")
+    if compile_firmware:
+        run("./waf", "configure", "--board", iomcu_board)
+        run("./waf", "iofirmware")
 
     build_dir = ROOT / "build" / iomcu_board / "bin"
     firmware_stem = f"iofirmware_{variant}"
@@ -99,6 +101,7 @@ def build_board(
     board_config: dict[str, Any],
     output: Path,
     label: str,
+    compile_iomcu: bool,
 ) -> None:
     hwdef_dir = ROOT / "libraries" / "AP_HAL_ChibiOS" / "hwdef" / board
     if not hwdef_dir.is_dir():
@@ -112,7 +115,13 @@ def build_board(
     iomcu_manifest = None
     iomcu_config = board_config.get("iomcu")
     if iomcu_config is not None:
-        iomcu_manifest = build_iomcu(board, iomcu_config, output, label)
+        iomcu_manifest = build_iomcu(
+            board,
+            iomcu_config,
+            output,
+            label,
+            compile_iomcu,
+        )
 
     run(sys.executable, "Tools/scripts/build_bootloaders.py", board)
     run("./waf", "configure", "--board", board)
@@ -175,6 +184,11 @@ def main() -> None:
     parser.add_argument("--board", required=True)
     parser.add_argument("--label", required=True)
     parser.add_argument("--output-dir", type=Path)
+    parser.add_argument(
+        "--use-prebuilt-iomcu",
+        action="store_true",
+        help="package an IOMCU already built in this workspace",
+    )
     args = parser.parse_args()
 
     config = json.loads(TARGETS_FILE.read_text(encoding="utf-8"))
@@ -184,7 +198,13 @@ def main() -> None:
 
     label = safe_label(args.label)
     output = args.output_dir or ROOT / "dist" / label / args.board
-    build_board(args.board, board_config, output.resolve(), label)
+    build_board(
+        args.board,
+        board_config,
+        output.resolve(),
+        label,
+        compile_iomcu=not args.use_prebuilt_iomcu,
+    )
 
 
 if __name__ == "__main__":

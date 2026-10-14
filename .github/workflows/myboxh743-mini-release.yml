@@ -1,0 +1,95 @@
+name: Build MyboxH743 Mini release
+run-name: Mini — ${{ inputs.tag }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Unique Mini release tag"
+        required: true
+        default: "myboxh743-mini-4.7.1-r2"
+        type: string
+      prerelease:
+        description: "Mark the release as a pre-release"
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Mini Copter, Plane and Rover
+    runs-on: ubuntu-latest
+    container: ardupilot/ardupilot-dev-chibios:v0.1.3
+    env:
+      RELEASE_BOARD: MyboxH743_mini
+      RELEASE_TAG: ${{ inputs.tag }}
+    steps:
+      - name: Check out source and submodules
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Trust the checked-out repository in the build container
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Install firmware packaging tool
+        run: python3 -m pip install --disable-pip-version-check intelhex==2.3.0
+
+      - name: Build Mini firmware
+        run: >-
+          python3 Tools/scripts/build_myboxes_release.py
+          --board "$RELEASE_BOARD"
+          --label "$RELEASE_TAG"
+          --output-dir "release/$RELEASE_BOARD"
+
+      - name: Upload Mini build result
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-MyboxH743_mini
+          path: release/MyboxH743_mini/
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Publish Mini release
+    needs: build
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_BOARD: MyboxH743_mini
+      RELEASE_TAG: ${{ inputs.tag }}
+      IS_PRERELEASE: ${{ inputs.prerelease }}
+    steps:
+      - name: Download Mini firmware files
+        uses: actions/download-artifact@v4
+        with:
+          name: firmware-MyboxH743_mini
+          path: release
+
+      - name: Create or update Mini release
+        shell: bash
+        run: |
+          mapfile -d '' files < <(find release -type f -print0 | sort -z)
+          if (( ${#files[@]} == 0 )); then
+            echo "No release files were downloaded" >&2
+            exit 1
+          fi
+
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "${files[@]}" --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            prerelease_args=()
+            if [[ "$IS_PRERELEASE" == "true" ]]; then
+              prerelease_args+=(--prerelease)
+            fi
+            gh release create "$RELEASE_TAG" "${files[@]}" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$GITHUB_SHA" \
+              --title "$RELEASE_BOARD firmware $RELEASE_TAG" \
+              --generate-notes \
+              "${prerelease_args[@]}"
+          fi
