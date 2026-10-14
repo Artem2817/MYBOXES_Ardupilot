@@ -34,6 +34,9 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+      - name: Trust the checked-out repository in the build container
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Build release files
         run: >-
           python3 Tools/scripts/build_myboxes_release.py
