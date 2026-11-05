@@ -1,13 +1,13 @@
 const query = new URLSearchParams(location.search);
 const allowed = {
-  board: new Set(["mini", "pro"]),
+  board: new Set(["mini-v2", "mini-v2-vib", "mini", "pro"]),
   vehicle: new Set(["copter", "plane", "rover"]),
   channel: new Set(["all", "stable", "beta", "dev"]),
 };
 const queryValue = (name, fallback) => allowed[name].has(query.get(name)) ? query.get(name) : fallback;
 
 const state = {
-  board: queryValue("board", "mini"),
+  board: queryValue("board", "mini-v2"),
   vehicle: queryValue("vehicle", "copter"),
   channel: queryValue("channel", "all"),
   version: "latest",

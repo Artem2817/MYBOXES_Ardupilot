@@ -16,9 +16,15 @@ from typing import Any
 
 
 RELEASE_TAG = re.compile(
-    r"^myboxh743-(mini|pro)-([0-9]+\.[0-9]+\.[0-9]+)-r([1-9][0-9]*)(?:-(dev|beta))?$"
+    r"^myboxh743-(mini-v2-vib|mini-v2|mini|pro)-([0-9]+\.[0-9]+\.[0-9]+)-r([1-9][0-9]*)(?:-(dev|beta))?$"
 )
 VEHICLE_PATTERN = re.compile(r"-(copter|plane|rover)-")
+BOARD_NAMES = {
+    "mini": "MyboxH743 Mini",
+    "mini-v2": "MyboxH743 Mini v2",
+    "mini-v2-vib": "MyboxH743 Mini v2 Vib",
+    "pro": "MyboxH743 Pro",
+}
 
 
 def github_get(url: str, token: str) -> tuple[Any, dict[str, str]]:
@@ -97,7 +103,7 @@ def normalize_release(release: dict[str, Any]) -> dict[str, Any] | None:
 
     return {
         "board": board,
-        "board_name": "MyboxH743 Mini" if board == "mini" else "MyboxH743 Pro",
+        "board_name": BOARD_NAMES[board],
         "version": version,
         "revision": int(revision_text),
         "channel": channel,

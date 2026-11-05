@@ -1,5 +1,5 @@
 name: Validate MYBOXES firmware
-run-name: Validate Mini and Pro — ${{ github.event_name }}
+run-name: Validate MYBOXES boards — ${{ github.event_name }}
 
 on:
   push:
@@ -26,6 +26,8 @@ jobs:
       matrix:
         board:
           - MyboxH743_mini
+          - MyboxH743_mini_v2
+          - MyboxH743_mini_v2_vib
           - MyboxH743_pro
     env:
       BUILD_LABEL: ci-${{ github.sha }}
