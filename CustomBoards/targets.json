@@ -18,6 +18,20 @@
         "variant": "highpolh",
         "embedded_path": "Tools/IO_Firmware/iofirmware_f103_8MHz_highpolh.bin"
       }
+    },
+    "MyboxH743_mini_v2": {
+      "vehicles": [
+        "copter",
+        "plane",
+        "rover"
+      ]
+    },
+    "MyboxH743_mini_v2_vib": {
+      "vehicles": [
+        "copter",
+        "plane",
+        "rover"
+      ]
     }
   }
 }
