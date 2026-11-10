@@ -5,6 +5,9 @@ Configuration for current MYBOX H743 Mini CAD, 2026-11-05. AI-assisted preparati
 SPI2 ICM-45686 (IMU0), SPI1 ICM-42670-P (IMU1). IMU1 is on the vibration-isolated module; its ROTATION_NONE is temporary.
 Main IMU orientation is preserved as ROTATION_NONE from the existing Mini configuration.
 SPA06-003 uses the SPL06 driver, main I2C1/0x76 and module I2C1/0x77.
+EK3_PRIMARY=1 and BARO_PRIMARY=1 prefer the J19 module at boot.
+Both IMUs remain enabled in EKF3 so normal lane switching is available.
+Verify the isolated IMU orientation before using this configuration in flight.
 AT7456E uses the MAX7456-compatible OSD driver on SPI4.
 
 Do not populate main-board R35-R38. Populate module heater resistors; feedback is IMU1.

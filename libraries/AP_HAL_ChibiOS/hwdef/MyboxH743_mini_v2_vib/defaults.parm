@@ -1,5 +1,8 @@
 # Default port protocols. BRD_HEAT_TARG controls the populated heater.
 BRD_HEAT_TARG -1
+# Use the isolated J19 sensors first.
+EK3_PRIMARY 1
+BARO_PRIMARY 1
 SERIAL1_PROTOCOL 2
 SERIAL2_PROTOCOL 2
 SERIAL3_PROTOCOL 5

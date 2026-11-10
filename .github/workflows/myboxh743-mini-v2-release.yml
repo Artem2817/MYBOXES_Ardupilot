@@ -158,7 +158,8 @@ jobs:
           Current Mini v2 hardware definitions, prepared with AI assistance.
 
           - Main IMU: ICM-45686 on SPI2; SPA06-003 barometer; AT7456E OSD.
-          - Vib adds ICM-42670-P on SPI1 and a second SPA06-003 at 0x77.
+          - Vib prefers the isolated ICM-42670-P and SPA06-003 at 0x77.
+          - SPA06-003 pressure compensation uses the cubic c31 term in both variants.
           - 13 PWM outputs, I2C4 on GPS2, separate CAN silent controls.
           - Heater PA15: main IMU feedback on Mini v2, isolated IMU feedback on Vib.
           - Main IMU rotation is preserved. Vib module rotation is temporary ROTATION_NONE.
