@@ -174,7 +174,7 @@ function renderRelease(release) {
   if (inav) {
     const metadata = release.assets.filter((asset) => asset.component === "metadata");
     const details = release.board === "mini-v2-vib"
-      ? "SHA-256 и манифест. Используется основной ICM-45686. Датчики выносного модуля отключены."
+      ? "SHA-256 и манифест. Состав датчиков и условия проверки указаны в описании релиза."
       : "Манифест сборки и контрольная сумма SHA-256.";
     componentGrid.append(componentCard("Проверка файлов", details, metadata));
     return fragment;
@@ -227,7 +227,7 @@ function applyStateToControls() {
   elements.vehicleFilter.hidden = inav;
   elements.ardupilotGuide.hidden = inav;
   elements.inavGuide.hidden = !inav;
-  elements.vibDescription.textContent = inav ? "С виброизоляцией · основной IMU" : "С виброизоляцией · два IMU";
+  elements.vibDescription.textContent = inav ? "С виброизоляцией · выносной модуль" : "С виброизоляцией · два IMU";
   elements.vehicle.value = state.vehicle;
   elements.channel.value = state.channel;
 }
