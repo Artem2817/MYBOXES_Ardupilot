@@ -26,6 +26,12 @@ BOARD_NAMES = {
     "pro": "MyboxH743 Pro",
 }
 
+INAV_TARGETS = {
+    "mini": "MYBOXH743MINI",
+    "mini-v2": "MYBOXH743MINIV2",
+    "mini-v2-vib": "MYBOXH743MINIV2VIB_BENCH",
+}
+
 
 def github_get(url: str, token: str) -> tuple[Any, dict[str, str]]:
     headers = {
@@ -88,7 +94,7 @@ def classify_asset(asset: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def normalize_release(release: dict[str, Any]) -> dict[str, Any] | None:
+def normalize_release(release: dict[str, Any], firmware: str = "ardupilot") -> dict[str, Any] | None:
     if release.get("draft"):
         return None
     tag = release.get("tag_name", "")
@@ -101,7 +107,24 @@ def normalize_release(release: dict[str, Any]) -> dict[str, Any] | None:
     if channel is None:
         channel = "beta" if release.get("prerelease") else "stable"
 
+    assets = [
+        classify_asset(asset) for asset in release.get("assets", [])
+        if asset.get("state", "uploaded") == "uploaded"
+    ]
+    if firmware == "inav":
+        target = INAV_TARGETS.get(board)
+        if target is None:
+            return None
+        expected = f"inav_{version}_{target}.hex"
+        files = {asset["name"]: asset for asset in assets}
+        if not {expected, "manifest.json", "SHA256SUMS.txt"} <= files.keys():
+            return None
+        files[expected]["component"] = "firmware"
+        assets = [files[name] for name in (expected, "manifest.json", "SHA256SUMS.txt")]
+
     return {
+        "firmware": firmware,
+        "bench_only": firmware == "inav",
         "board": board,
         "board_name": BOARD_NAMES[board],
         "version": version,
@@ -113,7 +136,7 @@ def normalize_release(release: dict[str, Any]) -> dict[str, Any] | None:
         "release_url": release["html_url"],
         "target": release.get("target_commitish", ""),
         "prerelease": bool(release.get("prerelease")),
-        "assets": [classify_asset(asset) for asset in release.get("assets", [])],
+        "assets": assets,
     }
 
 
@@ -122,18 +145,23 @@ def version_key(release: dict[str, Any]) -> tuple[int, ...]:
     return (*version, release["revision"])
 
 
-def build_catalog(repository: str, token: str) -> dict[str, Any]:
+def build_catalog(repository: str, token: str, inav_repository: str | None = None) -> dict[str, Any]:
+    sources = {"ardupilot": repository}
+    if inav_repository:
+        sources["inav"] = inav_repository
     normalized = [
         item
-        for release in load_releases(repository, token)
-        if (item := normalize_release(release)) is not None
+        for firmware, source in sources.items()
+        for release in load_releases(source, token)
+        if (item := normalize_release(release, firmware)) is not None
     ]
     normalized.sort(key=version_key, reverse=True)
     return {
-        "schema": 1,
+        "schema": 2,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "repository": repository,
         "repository_url": f"https://github.com/{repository}",
+        "repositories": {firmware: f"https://github.com/{source}" for firmware, source in sources.items()},
         "requires_github_access": False,
         "releases": normalized,
     }
@@ -142,6 +170,7 @@ def build_catalog(repository: str, token: str) -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repository", required=True)
+    parser.add_argument("--inav-repository")
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
@@ -154,7 +183,7 @@ def main() -> None:
         raise ValueError("output must not be inside the source directory")
 
     token = os.environ.get("GH_TOKEN", "")
-    catalog = build_catalog(args.repository, token)
+    catalog = build_catalog(args.repository, token, args.inav_repository)
 
     if output.exists():
         shutil.rmtree(output)

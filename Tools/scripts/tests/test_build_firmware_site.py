@@ -4,6 +4,7 @@
 import importlib.util
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 SPEC = importlib.util.spec_from_file_location('firmware_site', Path(__file__).parents[1] / 'build_firmware_site.py')
 SITE = importlib.util.module_from_spec(SPEC)
@@ -52,5 +53,50 @@ class FirmwareCatalogTests(unittest.TestCase):
             self.assertEqual(result['component'], 'bootloader')
 
 
-if __name__ == '__main__':
+    def inav_release(self, variant):
+        """Create an INAV release with the published layout."""
+        release = self.release(variant)
+        release['tag_name'] = f'myboxh743-{variant}-9.1.0-r1-dev'
+        names = [f'inav_9.1.0_{SITE.INAV_TARGETS[variant]}.hex', 'manifest.json', 'SHA256SUMS.txt']
+        release['assets'] = [{'name': name, 'browser_download_url': f'https://example.com/{name}'}
+                             for name in names]
+        return release
+
+    def test_inav_keeps_only_board_hex_and_metadata(self):
+        """Every Mini revision links its own HEX and has no vehicle split."""
+        for variant in SITE.INAV_TARGETS:
+            with self.subTest(variant=variant):
+                release = self.inav_release(variant)
+                release['assets'].append({'name': 'other.hex', 'browser_download_url': 'https://example.com/other'})
+                result = SITE.normalize_release(release, 'inav')
+                self.assertEqual((result['firmware'], result['board'], result['bench_only']), ('inav', variant, True))
+                self.assertEqual([asset['component'] for asset in result['assets']], ['firmware', 'metadata', 'metadata'])
+                self.assertIsNone(result['assets'][0]['vehicle'])
+
+    def test_inav_omits_incomplete_or_mismatched_downloads(self):
+        """Never offer a HEX for the wrong revision or an incomplete release."""
+        release = self.inav_release('mini-v2')
+        release['assets'][0]['state'] = 'new'
+        self.assertIsNone(SITE.normalize_release(release, 'inav'))
+        release = self.inav_release('mini-v2')
+        release['assets'][0]['name'] = 'inav_9.1.0_MYBOXH743MINI.hex'
+        self.assertIsNone(SITE.normalize_release(release, 'inav'))
+        release = self.inav_release('mini-v2')
+        release['assets'].pop()
+        self.assertIsNone(SITE.normalize_release(release, 'inav'))
+        self.assertIsNone(SITE.normalize_release(self.release('pro'), 'inav'))
+
+    def test_catalog_preserves_both_repositories(self):
+        """The same board appears separately for ArduPilot and INAV."""
+        with patch.object(SITE, 'load_releases', side_effect=[[self.release('mini-v2')], [self.inav_release('mini-v2')]]):
+            catalog = SITE.build_catalog('example/ardupilot', '', 'example/inav')
+        self.assertEqual(catalog['repositories'], {
+            'ardupilot': 'https://github.com/example/ardupilot',
+            'inav': 'https://github.com/example/inav',
+        })
+        self.assertEqual({(row['board'], row['firmware']) for row in catalog['releases']},
+                         {('mini-v2', 'ardupilot'), ('mini-v2', 'inav')})
+
+
+if __name__ == "__main__":
     unittest.main()

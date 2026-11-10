@@ -18,6 +18,9 @@ on:
     types:
       - completed
   workflow_dispatch:
+  schedule:
+    # Refresh releases from MYBOXES_INAV, which publishes in a separate repository.
+    - cron: '23 * * * *'
 
 permissions:
   actions: read
@@ -49,6 +52,7 @@ jobs:
         run: >-
           python3 Tools/scripts/build_firmware_site.py
           --repository "$GITHUB_REPOSITORY"
+          --inav-repository Artem2817/MYBOXES_INAV
           --source site/firmware-download
           --output _site
 

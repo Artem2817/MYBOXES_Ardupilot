@@ -6,10 +6,10 @@
     <meta name="theme-color" content="#080b12" />
     <meta
       name="description"
-      content="Каталог прошивок ArduPilot для полётных контроллеров MYBOXES H743"
+      content="Каталог прошивок ArduPilot и INAV для полётных контроллеров MYBOXES H743"
     />
     <title>MYBOXES Firmware</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=2" />
   </head>
   <body>
     <div class="background-grid" aria-hidden="true"></div>
@@ -31,14 +31,14 @@
           <p class="eyebrow"><span></span> OFFICIAL FLIGHT STACK</p>
           <h1>Прошивка без<br /><em>угадывания файлов.</em></h1>
           <p class="hero-copy">
-            Выберите плату и тип аппарата. Каталог покажет совместимые образы,
-            загрузчик и IO firmware из проверенных GitHub Releases.
+            Выберите ArduPilot или INAV, затем плату и версию.
+            Каталог покажет файлы для выбранной конфигурации.
           </p>
         </div>
         <div class="telemetry" aria-label="Статистика каталога">
           <div class="telemetry-row">
             <span>ПЛАТФОРМА</span>
-            <strong>ARDUPILOT</strong>
+            <strong id="firmware-name">ARDUPILOT</strong>
           </div>
           <div class="telemetry-row">
             <span>АРХИТЕКТУРА</span>
@@ -70,7 +70,7 @@
           </button>
           <button class="board-button" type="button" data-board="mini-v2-vib">
             <span class="board-icon">V2</span>
-            <span><strong>MyboxH743 Mini v2 Vib</strong><small>С виброизоляцией · два IMU</small></span>
+            <span><strong>MyboxH743 Mini v2 Vib</strong><small id="vib-description">С виброизоляцией · два IMU</small></span>
           </button>
           <button class="board-button" type="button" data-board="mini">
             <span class="board-icon">M</span>
@@ -84,6 +84,13 @@
 
         <div class="filters">
           <label>
+            <span>Прошивка</span>
+            <select id="firmware-select">
+              <option value="ardupilot">ArduPilot</option>
+              <option value="inav">INAV</option>
+            </select>
+          </label>
+          <label id="vehicle-filter">
             <span>Тип аппарата</span>
             <select id="vehicle-select">
               <option value="copter">Copter</option>
@@ -125,10 +132,14 @@
             <h2 id="guide-title">Какой файл выбирать?</h2>
           </div>
         </div>
-        <div class="guide-grid">
+        <div class="guide-grid" id="ardupilot-guide">
           <article><span class="format apj">APJ</span><h3>Обычное обновление</h3><p>Загружайте через Mission Planner, QGroundControl или веб-загрузчик ArduPilot.</p></article>
           <article><span class="format bin">BIN</span><h3>Чистый бинарник</h3><p>Для программатора, собственного загрузчика или точной записи по адресу.</p></article>
           <article><span class="format hex">HEX</span><h3>Первая прошивка</h3><p>Образ с загрузчиком для STM32CubeProgrammer, DFU или SWD.</p></article>
+        </div>
+        <div class="guide-grid" id="inav-guide" hidden>
+          <article><span class="format hex">HEX</span><h3>Локальная прошивка через DFU</h3><p>Выберите HEX в INAV Configurator 9.1. Тип аппарата настраивается в Mixer после прошивки.</p></article>
+          <article><h3>Переход с ArduPilot</h3><p>Сохраните параметры и образ ArduPilot для возврата. INAV HEX записывается поверх загрузчика ArduPilot.</p></article>
         </div>
       </section>
 
@@ -139,7 +150,7 @@
     </main>
 
     <footer class="shell footer">
-      <span>MYBOXES / ARDUPILOT</span>
+      <span id="footer-firmware">MYBOXES / ARDUPILOT</span>
       <span>Собрано автоматически из GitHub Releases</span>
     </footer>
 
@@ -158,6 +169,6 @@
       </article>
     </template>
 
-    <script src="app.js" defer></script>
+    <script src="app.js?v=2" defer></script>
   </body>
 </html>
