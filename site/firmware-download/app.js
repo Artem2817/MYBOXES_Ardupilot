@@ -232,6 +232,24 @@ function applyStateToControls() {
   elements.channel.value = state.channel;
 }
 
+let refreshingCatalog = false;
+let lastCatalogCheck = 0;
+async function refreshPublishedReleases() {
+  if (!state.catalog || refreshingCatalog || document.hidden) return;
+  refreshingCatalog = true;
+  lastCatalogCheck = Date.now();
+  try {
+    const updated = await liveCatalog.refresh(state.catalog);
+    if (updated) {
+      state.catalog = updated;
+      elements.time.textContent = `Релизы проверены ${new Date().toLocaleTimeString("ru-RU")}`;
+      render();
+    }
+  } finally {
+    refreshingCatalog = false;
+  }
+}
+
 async function initialize() {
   applyStateToControls();
   try {
@@ -242,6 +260,7 @@ async function initialize() {
     elements.time.textContent = `Каталог обновлён ${formatDate(state.catalog.generated_at)}`;
     elements.privateNote.hidden = !state.catalog.requires_github_access;
     render();
+    void refreshPublishedReleases();
   } catch (error) {
     elements.loading.hidden = true;
     elements.error.hidden = false;
@@ -275,3 +294,8 @@ elements.channel.addEventListener("change", () => { state.channel = elements.cha
 elements.version.addEventListener("change", () => { state.version = elements.version.value; render(); });
 
 initialize();
+
+setInterval(() => { void refreshPublishedReleases(); }, 5 * 60 * 1000);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden && Date.now() - lastCatalogCheck >= 5 * 60 * 1000) void refreshPublishedReleases();
+});
