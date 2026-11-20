@@ -1,46 +1,59 @@
 {
-  "schema": 1,
-  "version": "0.1.0",
+  "schema": 2,
+  "version": "0.2.0",
   "channel": "bench",
   "physical_validation": false,
-  "application_address": "0x08020000",
-  "bootloader_included": false,
+  "bootloader_included": true,
   "profiles": [
     {
       "profile": "MyboxH743_mini",
-      "build_id": "32f5d470defdbb7f",
+      "version": "0.2.0",
+      "full_file": "MayboxDiag-0.2.0-MyboxH743_mini-with-bootloader.hex",
+      "full_sha256": "26c2802cc0fe3c709b6e31a599f162173e5ae32448dcabfa634c7cac45587923",
+      "bootloader_file": "bootloaders/MayboxBootloader-0.2.0-MyboxH743_mini.hex",
+      "build_id": "c7ed838784094220",
       "platform_commit": "046cafbceec1a30a202b2eefe64554e5ea54cf01",
       "hardware_tested": false,
       "application_address": "0x08020000",
       "end_exclusive": "0x081c0000",
       "hwdef_sha256": "58be36244ace1aaa8e176e2570ba24772382c17ddde902784cbd8135fe3a0e82",
-      "file": "diagnostics/MayboxDiag-0.1.0-MyboxH743_mini.hex",
-      "sha256": "fd75b6b8ee27f7a8f42ed7152513680def95fc481e7046600ac424d590db3882",
-      "size": 1021384
+      "file": "diagnostics/MayboxDiag-0.2.0-MyboxH743_mini-with-bootloader.hex",
+      "sha256": "26c2802cc0fe3c709b6e31a599f162173e5ae32448dcabfa634c7cac45587923",
+      "size": 1055800
     },
     {
       "profile": "MyboxH743_mini_v2",
-      "build_id": "32f5d470defdbb7f",
+      "version": "0.2.0",
+      "full_file": "MayboxDiag-0.2.0-MyboxH743_mini_v2-with-bootloader.hex",
+      "full_sha256": "3e00dc482090a1c942d3092aa18df86da389d84bf2b8c630044f0067c20b583d",
+      "bootloader_file": "bootloaders/MayboxBootloader-0.2.0-MyboxH743_mini_v2.hex",
+      "build_id": "c7ed838784094220",
       "platform_commit": "046cafbceec1a30a202b2eefe64554e5ea54cf01",
       "hardware_tested": false,
       "application_address": "0x08020000",
       "end_exclusive": "0x081c0000",
       "hwdef_sha256": "a39f872e09ff160bd94fa31530d313fec0cecc4b03e2b371be3d0d6f9a3ffad5",
-      "file": "diagnostics/MayboxDiag-0.1.0-MyboxH743_mini_v2.hex",
-      "sha256": "47779e98360b6ce2c4cf55918405714b277f9257c236c9f81a05527de58e4fd7",
-      "size": 1022610
+      "file": "diagnostics/MayboxDiag-0.2.0-MyboxH743_mini_v2-with-bootloader.hex",
+      "sha256": "3e00dc482090a1c942d3092aa18df86da389d84bf2b8c630044f0067c20b583d",
+      "size": 1057068
     },
     {
       "profile": "MyboxH743_mini_v2_vib",
-      "build_id": "32f5d470defdbb7f",
+      "version": "0.2.0",
+      "full_file": "MayboxDiag-0.2.0-MyboxH743_mini_v2_vib-with-bootloader.hex",
+      "full_sha256": "24afc4fa88c1564e663015f4d6dca031603ace3cf8271b795a919805b193768c",
+      "bootloader_file": "bootloaders/MayboxBootloader-0.2.0-MyboxH743_mini_v2_vib.hex",
+      "build_id": "c7ed838784094220",
       "platform_commit": "046cafbceec1a30a202b2eefe64554e5ea54cf01",
       "hardware_tested": false,
       "application_address": "0x08020000",
       "end_exclusive": "0x081c0000",
       "hwdef_sha256": "8cee6dc01d7bf1ae00b0805a5f6ab11ffbd6ea5be8fe3e357ff33b5b1762f3d2",
-      "file": "diagnostics/MayboxDiag-0.1.0-MyboxH743_mini_v2_vib.hex",
-      "sha256": "f20e800261bd9ef3f40cfc56a6484dfd786787028a602c64abd9cb16f0967961",
-      "size": 1025294
+      "file": "diagnostics/MayboxDiag-0.2.0-MyboxH743_mini_v2_vib-with-bootloader.hex",
+      "sha256": "24afc4fa88c1564e663015f4d6dca031603ace3cf8271b795a919805b193768c",
+      "size": 1059692
     }
-  ]
+  ],
+  "windows_exe": "diagnostics/MayboxDiag-0.2.0-windows-x64.exe",
+  "windows_sha256": "9a8237c09e02c0fec7c2d272295df214d64507565a8a26d47c3fe917212286b8"
 }

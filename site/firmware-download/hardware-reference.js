@@ -22,9 +22,28 @@
       content.append(table(['Выход','Вывод MCU','Таймер','Контакт / примечание'],(p.outputs||[]).map(o=>[p.board==='pro'?`FMU ${o.channel}`:`PWM${o.channel}`,o.pin,o.timer,o.connector||((board==='mini-v2'||board==='mini-v2-vib')?`J10/${15-o.channel}`:'Номер сигнального выхода по маркировке платы')])));
       if(p.iomcu_outputs)content.append(table(['Выход IOMCU','Вывод STM32F103','Таймер'],p.iomcu_outputs.map(o=>[o.channel,o.pin,o.timer])));
       paragraph('Группы аппаратных таймеров: '+Object.entries(groups).map(([g,v])=>`${g}: ${v.join(', ')}`).join('; ')+'. Частота и протокол внутри одной группы связаны; проверяйте настройки перед смешением серво и моторов.');
+      content.append(node('h3','RCIN: подключение и настройка ArduPilot / INAV'));
+      if(board==='pro') {
+        paragraph('Pro: выделенный RCIN обслуживает STM32F103 IOMCU. В его HWDEF вход PPM — PA8 / TIM1 CH1. Не используйте распиновку Mini. Для последовательных приёмников на UART H743 применяется SERIALn_PROTOCOL=23. INAV для Pro в этом каталоге не поддерживается.');
+      } else {
+        paragraph(board==='mini'?'Выделенный RCIN старой Mini: PA3 / TIM2_CH4. Это отдельный вход приёмника, не UART RX.':'Выделенный RCIN Mini v2 / Vib: J10/1, PB3 / TIM2_CH2. Это отдельный вход приёмника, не UART RX.');
+        paragraph('Подключение: сигнальный выход приёмника к RCIN, общий GND. Используйте логические уровни 3,3 В. Питание приёмника подключайте отдельно по его паспорту; не подавайте 5 В на сигнальный контакт. TXS0108 не делает вход универсальным для любых уровней и длинных проводов.');
+        content.append(node('h4','ArduPilot — выделенный RCIN'));
+        paragraph('Для PPM или стандартного инвертированного SBUS подключите выход приёмника к RCIN. RC_PROTOCOLS=1 разрешает автоматическое распознавание; для проверки только SBUS можно задать RC_PROTOCOLS=8. SERIALn_PROTOCOL для самого выделенного RCIN настраивать не требуется. Перезагрузите и проверьте каналы в Mission Planner → Radio Calibration, затем откалибруйте диапазоны. Проверку потери сигнала выполняйте с отключёнными опасными нагрузками. Отсутствие приёмника не означает неисправность RCIN.');
+        content.append(node('h4','ArduPilot — CRSF / ELRS через UART'));
+        paragraph((board==='mini'?'USART2 соответствует SERIAL2':'USART2 соответствует SERIAL1')+': PD5 TX контроллера → RX приёмника, PD6 RX → TX приёмника, общий GND. Установите SERIALn_PROTOCOL=23 для выбранного UART (n — указанный номер SERIAL). CRSF подключается к UART, не к выделенному контакту RCIN. Не подключайте одновременно несколько источников управления при первичной настройке.');
+        content.append(node('h4','INAV — SBUS на выделенном RCIN'));
+        paragraph('Поддерживается SBUS 100 кбит/с, 8E2. PPM на выделенном RCIN в этой сборке INAV не поддерживается. В Receiver выберите Serial/SBUS, затем выполните в CLI:');
+        content.append(node('pre','set serialrx_provider = SBUS\nset mybox_sbus_rcin = ON\nset serialrx_inverted = OFF\nsave'));
+        paragraph('После перезапуска проверьте движение каналов, середины, крайние значения и failsafe при выключении передатчика. OFF для serialrx_inverted здесь соответствует штатному инвертированному SBUS в реализации выделенного входа, как указано в документации этой сборки.');
+        content.append(node('h4','INAV — CRSF / ELRS через UART'));
+        paragraph('Используйте UART2 (USART2): PD5 TX → RX приёмника, PD6 RX → TX приёмника, GND. В Ports включите Serial RX только у этого UART; в Receiver выберите CRSF. Выделенный вход отключите:');
+        content.append(node('pre','set mybox_sbus_rcin = OFF\nset serialrx_provider = CRSF\nsave'));
+        paragraph('В диагностической программе для этого тракта есть отдельный тест rcin.frames. Он требует реального приёмника/генератора и минимум трёх декодированных кадров; пустой вход не засчитывается как пройденный.');
+      }
       content.append(node('h3','UART, USB, CAN, I²C и остальные выводы'));
       paragraph('UART: TX контроллера подключается к RX устройства, RX — к TX, общий GND. Логические уровни 3,3 В; V_PWM — отдельное внешнее питание серв. CAN требует правильной терминальной нагрузки и общего опорного потенциала. SWD: PA13 SWDIO, PA14 SWCLK.');
-      content.append(table(['Вывод MCU','Назначение','Параметры HWDEF'],p.pins.map(v=>[v.pin,v.signal,v.config])));
+      const allPins=node('details');allPins.append(node('summary','Все выводы MCU и назначения шин'),table(['Вывод MCU','Назначение','Параметры HWDEF'],p.pins.map(v=>[v.pin,v.signal,v.config])));content.append(allPins);
       if(board!=='pro'){
         paragraph(board==='mini'?'SERIAL0 USB; SERIAL1 UART7 PE8 TX / PE7 RX (+ RTS PE9 / CTS PE10); SERIAL2 USART2 PD5 TX / PD6 RX (+ RTS PD4 / CTS PD3); SERIAL3 UART4 PB9 TX / PB8 RX; SERIAL4 UART8 PE1 TX / PE0 RX; SERIAL5 USART1 PA9 TX / PA10 RX. RCIN PA3 / TIM2_CH4.':'SERIAL0 USB J6; SERIAL1 USART2 J13 PD5 TX / PD6 RX (+ RTS PD4 / CTS PD3); SERIAL2 UART7 J7 PE8 TX / PE7 RX (+ RTS PE9 / CTS PE10); SERIAL3 USART1 J4 PA9 TX / PA10 RX; SERIAL4 UART8 J11 PE1 TX / PE0 RX; SERIAL5 USART3 J14 PD8 TX / PD9 RX. RCIN J10/1 PB3 / TIM2_CH2.');
         paragraph('АЦП: PC0 напряжение, PC1 ток, PC4 аналоговое давление, PC5 RSSI. Коэффициенты напряжения '+p.voltage_scale+', тока '+p.current_scale+' А/В, давления 2. Коэффициенты из профиля требуют сверки с реальным модулем питания. Встроенного компаса нет; внешние датчики подключаются к соответствующей I²C-шине.');

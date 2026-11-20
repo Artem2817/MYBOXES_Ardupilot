@@ -190,3 +190,16 @@ h1 em { color: var(--orange); font-style: normal; font-weight: 500; }
 .diagnostic-list a { display:inline-block;padding:.75rem 1rem;margin:.5rem .5rem .5rem 0;background:#17473f;color:#b9ffed;border-radius:7px; }
 .diagnostic-list code { display:block;overflow-wrap:anywhere;font-size:.875rem; }
 #reference-board { background:#101824;color:#e7f1fa;border:1px solid #354258;border-radius:8px;padding:.75rem 1rem;margin-left:.75rem;font-size:1rem; }
+.hardware-reference pre { white-space:pre-wrap;padding:1rem;background:#101824;border:1px solid #293349;border-radius:8px;font-size:1rem;line-height:1.6; }
+.diagnostic-simple { max-width:1100px;padding-top:2rem;padding-bottom:3rem; }
+.diagnostic-simple h1 { font-size:clamp(2.2rem,5vw,4rem);line-height:1.1;margin:2rem 0 1rem; }
+.diagnostic-simple .diag-steps { padding-left:1.5rem;line-height:1.8; }
+.diagnostic-simple .diagnostic-list { grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin:1.2rem 0; }
+.diagnostic-simple .diagnostic-list article { padding:1.25rem; }
+.diagnostic-simple .diagnostic-list h3 { margin:0 0 .5rem; }
+.diagnostic-simple .diagnostic-list p { line-height:1.6;color:#b8c8da; }
+.diag-exe { display:inline-block;padding:1rem 1.5rem;border-radius:9px;background:#35d6ed;color:#07121b;font-size:1.1rem;font-weight:700;margin:.75rem 0 1.5rem; }
+.diagnostic-simple details { margin-top:1.5rem;padding:1rem;border:1px solid #293349;border-radius:10px;line-height:1.7; }
+.diagnostic-simple summary { cursor:pointer;font-size:1rem;font-weight:600; }
+.hardware-reference details { border:1px solid #293349;border-radius:9px;padding:1rem;margin:1rem 0; }
+.hardware-reference summary { cursor:pointer;color:#8cebd4;font-weight:600; }
