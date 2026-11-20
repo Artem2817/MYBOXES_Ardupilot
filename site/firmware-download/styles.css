@@ -174,3 +174,19 @@ h1 em { color: var(--orange); font-style: normal; font-weight: 500; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Additive hardware help: existing catalog layout and download rules are unchanged. */
+.reference-table-wrap { overflow-x:auto; margin:1.25rem 0; }
+.reference-table { width:100%;border-collapse:collapse;font-size:.95rem;min-width:600px; }
+.reference-table th,.reference-table td { padding:.75rem;text-align:left;border-bottom:1px solid #293349; }
+.reference-table th { color:#a8b7cd; }
+.hardware-reference p { line-height:1.7;color:#b8c8da;max-width:100ch; }
+.hardware-reference h3 { margin-top:2rem; }
+.hardware-reference a { color:#8cebd4; }
+#reference-board { margin:.75rem 0;min-height:44px;max-width:100%; }
+.diagnostic-warning { padding:1.25rem;border:1px solid #be8c42;border-radius:12px;background:#2b2319;color:#ffe2a5;line-height:1.65; }
+.diagnostic-list { display:grid;gap:1.25rem;margin:2rem 0; }
+.diagnostic-list article { padding:1.5rem;border:1px solid #293349;border-radius:14px;background:#101824; }
+.diagnostic-list a { display:inline-block;padding:.75rem 1rem;margin:.5rem .5rem .5rem 0;background:#17473f;color:#b9ffed;border-radius:7px; }
+.diagnostic-list code { display:block;overflow-wrap:anywhere;font-size:.875rem; }
+#reference-board { background:#101824;color:#e7f1fa;border:1px solid #354258;border-radius:8px;padding:.75rem 1rem;margin-left:.75rem;font-size:1rem; }

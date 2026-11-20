@@ -1,0 +1,559 @@
+{
+  "id": "MyboxH743_mini_v2",
+  "index": 1,
+  "mcu": "STM32H743xx",
+  "board_id": 1479,
+  "revision_hardware_verified": false,
+  "rotation_source": "hardware_profile",
+  "hwdef_sha256": "a39f872e09ff160bd94fa31530d313fec0cecc4b03e2b371be3d0d6f9a3ffad5",
+  "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat",
+  "imus": [
+    {
+      "id": "imu0",
+      "model": "ICM-45686",
+      "spi": "SPI2",
+      "device": "imu_main",
+      "cs": "PB12",
+      "rotation": "ROTATION_NONE",
+      "rotation_source": "hardware_profile",
+      "irq": null
+    }
+  ],
+  "barometers": [
+    {
+      "id": "baro0",
+      "model": "SPA06-003",
+      "bus": "I2C1",
+      "address": 118
+    }
+  ],
+  "compass": "external_only",
+  "spi_flash": "not_declared",
+  "pins": [
+    {
+      "pin": "PA11",
+      "signal": "OTG_FS_DM",
+      "config": "OTG1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:13"
+    },
+    {
+      "pin": "PA12",
+      "signal": "OTG_FS_DP",
+      "config": "OTG1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:14"
+    },
+    {
+      "pin": "PA13",
+      "signal": "JTMS-SWDIO",
+      "config": "SWD",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:15"
+    },
+    {
+      "pin": "PA14",
+      "signal": "JTCK-SWCLK",
+      "config": "SWD",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:16"
+    },
+    {
+      "pin": "PB13",
+      "signal": "SPI2_SCK",
+      "config": "SPI2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:19"
+    },
+    {
+      "pin": "PC2",
+      "signal": "SPI2_MISO",
+      "config": "SPI2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:20"
+    },
+    {
+      "pin": "PC3",
+      "signal": "SPI2_MOSI",
+      "config": "SPI2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:21"
+    },
+    {
+      "pin": "PB12",
+      "signal": "IMU1_CS",
+      "config": "CS",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:22"
+    },
+    {
+      "pin": "PA5",
+      "signal": "SPI1_SCK",
+      "config": "SPI1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:25"
+    },
+    {
+      "pin": "PA6",
+      "signal": "SPI1_MISO",
+      "config": "SPI1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:26"
+    },
+    {
+      "pin": "PA7",
+      "signal": "SPI1_MOSI",
+      "config": "SPI1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:27"
+    },
+    {
+      "pin": "PA4",
+      "signal": "IMU2_CS",
+      "config": "CS",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:28"
+    },
+    {
+      "pin": "PE12",
+      "signal": "SPI4_SCK",
+      "config": "SPI4",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:31"
+    },
+    {
+      "pin": "PE13",
+      "signal": "SPI4_MISO",
+      "config": "SPI4",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:32"
+    },
+    {
+      "pin": "PE14",
+      "signal": "SPI4_MOSI",
+      "config": "SPI4",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:33"
+    },
+    {
+      "pin": "PE11",
+      "signal": "MAX7456_CS",
+      "config": "CS",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:34"
+    },
+    {
+      "pin": "PD11",
+      "signal": "SENSOR_PWR_EN",
+      "config": "OUTPUT HIGH",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:36"
+    },
+    {
+      "pin": "PB8",
+      "signal": "I2C1_SCL",
+      "config": "I2C1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:38"
+    },
+    {
+      "pin": "PB7",
+      "signal": "I2C1_SDA",
+      "config": "I2C1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:39"
+    },
+    {
+      "pin": "PB10",
+      "signal": "I2C2_SCL",
+      "config": "I2C2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:40"
+    },
+    {
+      "pin": "PB11",
+      "signal": "I2C2_SDA",
+      "config": "I2C2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:41"
+    },
+    {
+      "pin": "PD12",
+      "signal": "I2C4_SCL",
+      "config": "I2C4",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:42"
+    },
+    {
+      "pin": "PB9",
+      "signal": "I2C4_SDA",
+      "config": "I2C4",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:43"
+    },
+    {
+      "pin": "PC0",
+      "signal": "BATT_VOLTAGE_SENS",
+      "config": "ADC1 SCALE(1)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:49"
+    },
+    {
+      "pin": "PC1",
+      "signal": "BATT_CURRENT_SENS",
+      "config": "ADC1 SCALE(1)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:50"
+    },
+    {
+      "pin": "PC4",
+      "signal": "PRESSURE_SENS",
+      "config": "ADC1 SCALE(2)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:51"
+    },
+    {
+      "pin": "PC5",
+      "signal": "RSSI_ADC",
+      "config": "ADC1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:52"
+    },
+    {
+      "pin": "PE4",
+      "signal": "LED1",
+      "config": "OUTPUT HIGH GPIO(91)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:64"
+    },
+    {
+      "pin": "PE2",
+      "signal": "LED_SAFETY",
+      "config": "OUTPUT",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:67"
+    },
+    {
+      "pin": "PE3",
+      "signal": "SAFETY_IN",
+      "config": "INPUT PULLDOWN",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:68"
+    },
+    {
+      "pin": "PD5",
+      "signal": "USART2_TX",
+      "config": "USART2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:72"
+    },
+    {
+      "pin": "PD6",
+      "signal": "USART2_RX",
+      "config": "USART2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:73"
+    },
+    {
+      "pin": "PD4",
+      "signal": "USART2_RTS",
+      "config": "USART2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:74"
+    },
+    {
+      "pin": "PD3",
+      "signal": "USART2_CTS",
+      "config": "USART2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:75"
+    },
+    {
+      "pin": "PE8",
+      "signal": "UART7_TX",
+      "config": "UART7",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:76"
+    },
+    {
+      "pin": "PE7",
+      "signal": "UART7_RX",
+      "config": "UART7",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:77"
+    },
+    {
+      "pin": "PE9",
+      "signal": "UART7_RTS",
+      "config": "UART7",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:78"
+    },
+    {
+      "pin": "PE10",
+      "signal": "UART7_CTS",
+      "config": "UART7",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:79"
+    },
+    {
+      "pin": "PA9",
+      "signal": "USART1_TX",
+      "config": "USART1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:80"
+    },
+    {
+      "pin": "PA10",
+      "signal": "USART1_RX",
+      "config": "USART1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:81"
+    },
+    {
+      "pin": "PE1",
+      "signal": "UART8_TX",
+      "config": "UART8",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:82"
+    },
+    {
+      "pin": "PE0",
+      "signal": "UART8_RX",
+      "config": "UART8",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:83"
+    },
+    {
+      "pin": "PD8",
+      "signal": "USART3_TX",
+      "config": "USART3",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:85"
+    },
+    {
+      "pin": "PD9",
+      "signal": "USART3_RX",
+      "config": "USART3",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:86"
+    },
+    {
+      "pin": "PD0",
+      "signal": "CAN1_RX",
+      "config": "CAN1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:88"
+    },
+    {
+      "pin": "PD1",
+      "signal": "CAN1_TX",
+      "config": "CAN1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:89"
+    },
+    {
+      "pin": "PB5",
+      "signal": "CAN2_RX",
+      "config": "CAN2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:90"
+    },
+    {
+      "pin": "PB6",
+      "signal": "CAN2_TX",
+      "config": "CAN2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:91"
+    },
+    {
+      "pin": "PA8",
+      "signal": "GPIO_CAN1_SILENT",
+      "config": "OUTPUT PUSHPULL SPEED_LOW LOW GPIO(70)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:93"
+    },
+    {
+      "pin": "PD7",
+      "signal": "GPIO_CAN2_SILENT",
+      "config": "OUTPUT PUSHPULL SPEED_LOW LOW GPIO(71)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:94"
+    },
+    {
+      "pin": "PB14",
+      "signal": "TIM1_CH2N",
+      "config": "TIM1 PWM(1) GPIO(50)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:97"
+    },
+    {
+      "pin": "PB15",
+      "signal": "TIM1_CH3N",
+      "config": "TIM1 PWM(2) GPIO(51)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:98"
+    },
+    {
+      "pin": "PD13",
+      "signal": "TIM4_CH2",
+      "config": "TIM4 PWM(3) GPIO(52)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:99"
+    },
+    {
+      "pin": "PD14",
+      "signal": "TIM4_CH3",
+      "config": "TIM4 PWM(4) GPIO(53)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:100"
+    },
+    {
+      "pin": "PD15",
+      "signal": "TIM4_CH4",
+      "config": "TIM4 PWM(5) GPIO(54)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:101"
+    },
+    {
+      "pin": "PC6",
+      "signal": "TIM8_CH1",
+      "config": "TIM8 PWM(6) GPIO(55)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:102"
+    },
+    {
+      "pin": "PC7",
+      "signal": "TIM8_CH2",
+      "config": "TIM8 PWM(7) GPIO(56)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:103"
+    },
+    {
+      "pin": "PA3",
+      "signal": "TIM5_CH4",
+      "config": "TIM5 PWM(8) GPIO(57)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:104"
+    },
+    {
+      "pin": "PA2",
+      "signal": "TIM5_CH3",
+      "config": "TIM5 PWM(9) GPIO(58)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:105"
+    },
+    {
+      "pin": "PA1",
+      "signal": "TIM5_CH2",
+      "config": "TIM5 PWM(10) GPIO(59)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:106"
+    },
+    {
+      "pin": "PA0",
+      "signal": "TIM5_CH1",
+      "config": "TIM5 PWM(11) GPIO(60)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:107"
+    },
+    {
+      "pin": "PE6",
+      "signal": "TIM15_CH2",
+      "config": "TIM15 PWM(12) GPIO(61)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:108"
+    },
+    {
+      "pin": "PE5",
+      "signal": "TIM15_CH1",
+      "config": "TIM15 PWM(13) GPIO(62)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:109"
+    },
+    {
+      "pin": "PB3",
+      "signal": "TIM2_CH2",
+      "config": "TIM2 RCININT PULLDOWN LOW",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:110"
+    },
+    {
+      "pin": "PB4",
+      "signal": "TIM3_CH1",
+      "config": "TIM3 GPIO(77) ALARM",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:112"
+    },
+    {
+      "pin": "PA15",
+      "signal": "HEATER",
+      "config": "OUTPUT LOW GPIO(80)",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:115"
+    },
+    {
+      "pin": "PC8",
+      "signal": "SDMMC1_D0",
+      "config": "SDMMC1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:122"
+    },
+    {
+      "pin": "PC9",
+      "signal": "SDMMC1_D1",
+      "config": "SDMMC1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:123"
+    },
+    {
+      "pin": "PC10",
+      "signal": "SDMMC1_D2",
+      "config": "SDMMC1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:124"
+    },
+    {
+      "pin": "PC11",
+      "signal": "SDMMC1_D3",
+      "config": "SDMMC1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:125"
+    },
+    {
+      "pin": "PC12",
+      "signal": "SDMMC1_CK",
+      "config": "SDMMC1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:126"
+    },
+    {
+      "pin": "PD2",
+      "signal": "SDMMC1_CMD",
+      "config": "SDMMC1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:127"
+    }
+  ],
+  "outputs": [
+    {
+      "channel": 1,
+      "pin": "PB14",
+      "timer": "TIM1_CH2N",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:97"
+    },
+    {
+      "channel": 2,
+      "pin": "PB15",
+      "timer": "TIM1_CH3N",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:98"
+    },
+    {
+      "channel": 3,
+      "pin": "PD13",
+      "timer": "TIM4_CH2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:99"
+    },
+    {
+      "channel": 4,
+      "pin": "PD14",
+      "timer": "TIM4_CH3",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:100"
+    },
+    {
+      "channel": 5,
+      "pin": "PD15",
+      "timer": "TIM4_CH4",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:101"
+    },
+    {
+      "channel": 6,
+      "pin": "PC6",
+      "timer": "TIM8_CH1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:102"
+    },
+    {
+      "channel": 7,
+      "pin": "PC7",
+      "timer": "TIM8_CH2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:103"
+    },
+    {
+      "channel": 8,
+      "pin": "PA3",
+      "timer": "TIM5_CH4",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:104"
+    },
+    {
+      "channel": 9,
+      "pin": "PA2",
+      "timer": "TIM5_CH3",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:105"
+    },
+    {
+      "channel": 10,
+      "pin": "PA1",
+      "timer": "TIM5_CH2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:106"
+    },
+    {
+      "channel": 11,
+      "pin": "PA0",
+      "timer": "TIM5_CH1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:107"
+    },
+    {
+      "channel": 12,
+      "pin": "PE6",
+      "timer": "TIM15_CH2",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:108"
+    },
+    {
+      "channel": 13,
+      "pin": "PE5",
+      "timer": "TIM15_CH1",
+      "source": "ardupilot_hwdef/MyboxH743_mini_v2/hwdef.dat:109"
+    }
+  ],
+  "voltage_scale": 21.0,
+  "current_scale": 83.333,
+  "storage": {
+    "sd": "SDMMC1",
+    "internal_flash_write": "disabled_no_reserved_scratch_region"
+  },
+  "limitations": [
+    "Нет физического испытания в этом сеансе"
+  ],
+  "board": "mini-v2",
+  "name": "MyboxH743_mini_v2",
+  "ardupilot_source": "https://github.com/Artem2817/MYBOXES_Ardupilot/blob/main/libraries/AP_HAL_ChibiOS/hwdef/MyboxH743_mini_v2/hwdef.dat",
+  "inav_source": "https://github.com/Artem2817/MYBOXES_INAV/blob/main/README.ru.md"
+}
