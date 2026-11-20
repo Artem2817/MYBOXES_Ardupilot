@@ -1,6 +1,6 @@
 {
   "schema": 2,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "channel": "bench",
   "physical_validation": false,
   "bootloader_included": true,
@@ -54,6 +54,6 @@
       "size": 1059840
     }
   ],
-  "windows_exe": "diagnostics/MyboxDiag-0.2.1-windows-x64.exe",
-  "windows_sha256": "2266f032e55e1bc2734853fe59d71f0c7ac6eb792d36ecaa0e89a8d4e1322dd4"
+  "windows_exe": "diagnostics/MyboxDiag-0.2.2-windows-x64.exe",
+  "windows_sha256": "8be4973444c9182f18a362e3d60806cb16c833c54ffbc924fef07f103a506438"
 }
