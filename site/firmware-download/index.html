@@ -9,7 +9,7 @@
       content="Каталог прошивок ArduPilot и INAV для полётных контроллеров MYBOXES H743"
     />
     <title>MYBOXES Firmware</title>
-    <link rel="stylesheet" href="styles.css?v=can16" />
+    <link rel="stylesheet" href="styles.css?v=can16copy" />
   </head>
   <body>
     <div class="background-grid" aria-hidden="true"></div>
@@ -222,6 +222,14 @@ set dronecan_bus = 1
 set mag_hardware = DRONECAN
 save</code></pre>
 <p>Для отдельного GPS по UART включите <code>feature GPS</code>, задайте <code>gps_provider = UBLOX</code> и назначьте GPS нужному UART в Ports. CAN-компас при этом сохраняется. Для UART/MSP-выхода Matek нельзя выбирать UBLOX: это другой протокол.</p>
+<h3>GPS по UART/MSP и компас по CAN от одного M10Q-3100</h3>
+<p>У M10Q-3100 TX2 передаёт MSP, не обычный UBX. Оставьте CAN-H/CAN-L, общее питание и GND; дополнительно соедините TX2 модуля с RX свободного UART полётника. Питание модуля достаточно подать один раз.</p>
+<p>В Ports для этого UART включите <code>MSP, 115200</code>. Функцию GPS на этом UART не назначайте. На модуле должен быть включён выход UART/MSP, как в инструкции Matek.</p>
+<pre><code>feature GPS
+set gps_provider = MSP
+set mag_hardware = DRONECAN
+save</code></pre>
+<p>Выбранный <code>dronecan_bus</code> и скорость CAN сохраняются. Полётник получает GPS по MSP, а компас по CAN; это работает в r16 INAV 10. В r15 INAV 9 компаса DroneCAN нет. Команда <code>gps_provider = UBLOX</code> для TX2 этого Matek не подходит.</p>
 <h3>GPS на CAN1, компас на CAN2</h3>
 <p>В r16 такой вариант недоступен: <code>dronecan_bus</code> выбирает один общий физический интерфейс. Разместите оба датчика на CAN1, оба на CAN2 либо сочетайте CAN с отдельными UART/I²C. Несколько CAN-устройств на выбранной шине допустимы при разных ID. Два интерфейса одновременно этот режим драйвера не обслуживает.</p>
 <h3>Проверка после подключения</h3>
@@ -264,5 +272,6 @@ status</code></pre>
     <script src="live-catalog.js?v=2" defer></script>
     <script src="app.js?v=5" defer></script>
     <script src="hardware-reference.js?v=2" defer></script>
+    <script src="copy-commands.js?v=1" defer></script>
   </body>
 </html>

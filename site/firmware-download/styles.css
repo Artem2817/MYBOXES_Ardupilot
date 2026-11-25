@@ -217,3 +217,8 @@ h1 em { color: var(--orange); font-style: normal; font-weight: 500; }
 .can-guide th, .can-guide td { text-align: left; padding: 12px; border: 1px solid var(--line); min-width: 140px; }
 .can-guide th { color: var(--text); }
 .can-guide[hidden] { display: none; }
+
+pre.copyable-commands { position: relative; padding-top: 3.75rem; }
+.copy-commands { position: absolute; top: 8px; right: 10px; min-height: 40px; padding: 8px 14px; border: 1px solid rgba(69,224,255,.4); border-radius: 8px; color: var(--cyan); background: #111b29; cursor: pointer; font-family: inherit; font-size: .875rem; font-weight: 600; line-height: 1.2; }
+.copy-commands:hover { border-color: var(--cyan); background: #1a293d; }
+.copy-commands:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
