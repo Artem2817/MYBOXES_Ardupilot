@@ -124,7 +124,7 @@ def normalize_release(release: dict[str, Any], firmware: str = "ardupilot") -> d
 
     return {
         "firmware": firmware,
-        "bench_only": firmware == "inav",
+        "bench_only": firmware == "inav" and channel != "stable",
         "board": board,
         "board_name": BOARD_NAMES[board],
         "version": version,

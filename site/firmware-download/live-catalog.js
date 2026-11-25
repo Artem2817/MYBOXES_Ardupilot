@@ -21,8 +21,9 @@ const liveCatalog = (() => {
       assets = names.map(name => assets.find(a => a.name === name));
       assets[0].component = "firmware";
     }
-    return { firmware, bench_only: firmware === "inav", board, board_name: boards[board],
-      version, revision: Number(revision), channel: suffix || (release.prerelease ? "beta" : "stable"),
+    const channel = suffix || (release.prerelease ? "beta" : "stable");
+    return { firmware, bench_only: firmware === "inav" && channel !== "stable", board, board_name: boards[board],
+      version, revision: Number(revision), channel,
       tag: release.tag_name, title: release.name || release.tag_name,
       published_at: release.published_at || release.created_at, release_url: release.html_url,
       target: release.target_commitish || "", prerelease: Boolean(release.prerelease), assets };

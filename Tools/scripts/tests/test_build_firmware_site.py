@@ -73,6 +73,17 @@ class FirmwareCatalogTests(unittest.TestCase):
                 self.assertEqual([asset['component'] for asset in result['assets']], ['firmware', 'metadata', 'metadata'])
                 self.assertIsNone(result['assets'][0]['vehicle'])
 
+    def test_stable_inav_is_not_marked_bench_only(self):
+        """Promoted HEX retains board routing and receives a stable badge."""
+        for variant in SITE.INAV_TARGETS:
+            release = self.inav_release(variant)
+            release['tag_name'] = f'myboxh743-{variant}-9.1.0-r15'
+            release['prerelease'] = False
+            result = SITE.normalize_release(release, 'inav')
+            self.assertEqual(result['channel'], 'stable')
+            self.assertFalse(result['bench_only'])
+            self.assertEqual(result['revision'], 15)
+
     def test_inav_omits_incomplete_or_mismatched_downloads(self):
         """Never offer a HEX for the wrong revision or an incomplete release."""
         release = self.inav_release('mini-v2')
