@@ -222,3 +222,61 @@ pre.copyable-commands { position: relative; padding-top: 3.75rem; }
 .copy-commands { position: absolute; top: 8px; right: 10px; min-height: 40px; padding: 8px 14px; border: 1px solid rgba(69,224,255,.4); border-radius: 8px; color: var(--cyan); background: #111b29; cursor: pointer; font-family: inherit; font-size: .875rem; font-weight: 600; line-height: 1.2; }
 .copy-commands:hover { border-color: var(--cyan); background: #1a293d; }
 .copy-commands:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+/* Modular controller setup and chapter navigation */
+.workspace-layout.shell { width: min(1480px, calc(100% - 40px)); display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 28px; align-items: start; }
+.workspace-content { min-width: 0; }
+.chapter-sidebar { position: sticky; top: 20px; max-height: calc(100dvh - 40px); overflow-y: auto; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--panel-solid); }
+.chapter-menu > summary { display: none; }
+.chapter-nav-title { margin: 0 0 16px; font-size: 1rem; font-weight: 700; }
+.chapter-nav-group { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line); }
+.chapter-link { display: block; padding: 9px 10px; margin: 2px 0; border-left: 2px solid transparent; border-radius: 0 7px 7px 0; text-decoration: none; font-size: .95rem; line-height: 1.35; color: var(--text); }
+.chapter-sub-link { padding-left: 18px; font-size: .875rem; color: var(--muted); }
+.chapter-link:hover { color: var(--cyan); background: rgba(69,224,255,.05); }
+.chapter-link.active { color: var(--cyan); border-left-color: var(--cyan); background: rgba(69,224,255,.08); }
+.chapter-diag-link { display: block; padding: 14px 10px 2px; margin-top: 14px; border-top: 1px solid var(--line); color: var(--cyan); font-size: .9rem; text-decoration: none; }
+.guide-module, .guide-module.can-guide { margin: 0 0 14px; padding: 0; border: 1px solid var(--line); border-radius: 16px; background: rgba(17,22,34,.65); }
+.guide-module > summary { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px 16px; padding: 20px 24px; cursor: pointer; list-style: none; }
+.guide-module > summary::after { content: "+"; grid-column: 2; grid-row: 1 / span 2; align-self: center; color: var(--cyan); font-size: 24px; }
+.guide-module[open] > summary::after { content: "−"; }
+.module-heading { grid-column: 1; font-size: 1.15rem; font-weight: 700; line-height: 1.4; }
+.module-caption { grid-column: 1; color: var(--muted); font-size: .875rem; line-height: 1.45; }
+.guide-module-body { padding: 0 24px 24px; }
+.guide-module-body p, .guide-module-body li, .chapter-content { font-size: 1rem; line-height: 1.65; }
+.guide-module-body .format-guide { padding-bottom: 0; }
+.guide-module-body .guide-grid p { font-size: .95rem; }
+#guide-board #hardware-reference { margin: 0; padding: 0; border: 0; background: transparent; }
+.guide-chapter { border: 1px solid var(--line); border-radius: 10px; margin: 10px 0; overflow: hidden; }
+.guide-chapter > summary { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 16px; cursor: pointer; font-size: 1rem; font-weight: 650; line-height: 1.4; list-style: none; }
+.guide-chapter > summary::after { content: "+"; flex-shrink: 0; color: var(--cyan); font-size: 20px; }
+.guide-chapter[open] > summary::after { content: "−"; }
+summary::-webkit-details-marker { display: none; }
+summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: -3px; border-radius: 8px; }
+.chapter-content { padding: 0 16px 18px; min-width: 0; overflow-wrap: anywhere; }
+.setup-steps { padding-left: 24px; margin: 16px 0; }
+.setup-steps li { padding: 0 0 12px 5px; }
+.setup-steps strong { color: var(--text); }
+.setup-result { padding: 14px 16px; border-left: 3px solid var(--cyan); border-radius: 0 8px 8px 0; background: rgba(69,224,255,.055); }
+.advanced-note { margin: 18px 0 6px; border-top: 1px solid var(--line); padding-top: 12px; }
+.advanced-note > summary { cursor: pointer; color: var(--muted); font-size: .9rem; padding: 8px 0; }
+.help-list dt { margin-top: 18px; font-weight: 700; }
+.help-list dd { margin: 6px 0 16px; color: var(--muted); }
+[data-guide-module], [data-guide-chapter], #firmware-selector, #firmware-downloads { scroll-margin-top: 24px; }
+@media (max-width: 980px) {
+  .workspace-layout.shell { display: block; width: calc(100% - 24px); }
+  .chapter-sidebar { top: 8px; z-index: 10; margin-bottom: 18px; padding: 0; max-height: calc(100dvh - 16px); }
+  .chapter-menu > summary { display: block; padding: 16px; font-weight: 650; cursor: pointer; }
+  .chapter-menu-body { padding: 0 16px 16px; max-height: 65dvh; overflow-y: auto; }
+  .chapter-nav-title { display: none; }
+  .guide-module > summary { padding: 18px; }
+  .guide-module-body { padding: 0 16px 18px; }
+  [data-guide-module], [data-guide-chapter], #firmware-selector, #firmware-downloads { scroll-margin-top: 82px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+.chapter-content .advanced-note > summary::after { content: " +"; color: var(--cyan); }
+.chapter-content .advanced-note[open] > summary::after { content: " −"; }
+.chapter-menu > summary::after { content: "☰"; float: right; color: var(--cyan); }
+.chapter-menu[open] > summary::after { content: "−"; }
+
+#guide-board .guide-chapter > summary::before, #guide-board .receiver-option > summary::before { content: none; }

@@ -66,7 +66,7 @@ function formatDate(value) {
 function updateUrl() {
   const params = new URLSearchParams({ firmware: state.firmware, board: state.board, channel: state.channel });
   if (state.firmware === "ardupilot") params.set("vehicle", state.vehicle);
-  history.replaceState(null, "", `?${params}`);
+  history.replaceState(null, "", `?${params}${location.hash}`);
 }
 
 function releaseLabel(release) {

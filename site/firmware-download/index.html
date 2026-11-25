@@ -9,7 +9,7 @@
       content="Каталог прошивок ArduPilot и INAV для полётных контроллеров MYBOXES H743"
     />
     <title>MYBOXES Firmware</title>
-    <link rel="stylesheet" href="styles.css?v=can16copy" />
+    <link rel="stylesheet" href="styles.css?v=modules1" />
   </head>
   <body>
     <div class="background-grid" aria-hidden="true"></div>
@@ -54,8 +54,8 @@
       </div>
     </header>
 
-    <main class="shell">
-      <section class="selector-panel" aria-labelledby="selector-title">
+    <div class="workspace-layout shell"><aside class="chapter-sidebar" aria-label="Разделы настройки"><details class="chapter-menu" open><summary>Разделы и настройки</summary><div class="chapter-menu-body"><p class="chapter-nav-title">Настройка контроллера</p><nav id="chapter-navigation" aria-label="Оглавление"><a href="#firmware-selector">Выбрать прошивку</a><a href="#firmware-downloads">Скачать файл</a></nav><a class="chapter-diag-link" href="diagnostics.html?v=0.2.2">MyboxDiag — диагностика</a></div></details></aside><main id="main-content" class="workspace-content">
+      <section id="firmware-selector" class="selector-panel" aria-labelledby="selector-title">
         <div class="section-heading">
           <div>
             <p class="section-number">01 / ВЫБОР ПРОШИВКИ</p>
@@ -117,7 +117,7 @@
         </div>
       </section>
 
-      <section class="results" aria-live="polite" aria-busy="true">
+      <section id="firmware-downloads" class="results" aria-live="polite" aria-busy="true">
         <div id="loading" class="status-card">
           <div class="loader"></div>
           <div><strong>Читаем Releases</strong><span>Собираем совместимые файлы…</span></div>
@@ -126,7 +126,7 @@
         <div id="release-list"></div>
       </section>
 
-      <section class="format-guide" aria-labelledby="guide-title">
+      <details class="guide-module" id="guide-install" data-guide-module data-guide-title="Установка прошивки"><summary><span class="module-heading">Установка прошивки</span><span class="module-caption">Форматы файлов и переход между прошивками</span></summary><div class="guide-module-body"><section class="format-guide" aria-labelledby="guide-title">
         <div class="section-heading compact">
           <div>
             <p class="section-number">02 / ФОРМАТЫ</p>
@@ -142,20 +142,82 @@
           <article><span class="format hex">HEX</span><h3>Локальная прошивка через DFU</h3><p>Для INAV 10 нужен Configurator 10.0, для INAV 9.1 — Configurator 9.1. Выберите соответствующий HEX. Тип аппарата настраивается в Mixer после прошивки.</p></article>
           <article><h3>Переход с ArduPilot</h3><p>Сохраните параметры и образ ArduPilot для возврата. INAV HEX записывается поверх загрузчика ArduPilot.</p></article>
         </div>
-      </section>
+      </section></div></details>
 
-<section class="format-guide hardware-reference" id="hardware-reference" aria-labelledby="reference-title">
+<details class="guide-module" id="guide-board" data-guide-module data-guide-title="Приёмник, сервы и выводы"><summary><span class="module-heading">Приёмник, сервы и выводы</span><span class="module-caption">PWM, DShot, SBUS и подключение устройств</span></summary><div class="guide-module-body"><section class="format-guide hardware-reference" id="hardware-reference" aria-labelledby="reference-title">
  <div class="section-heading compact"><div><p class="section-number">СПРАВКА ПО ПЛАТЕ</p><h2 id="reference-title">Выводы, серво и DShot</h2></div></div>
  <p>Назначения из HWDEF и исходников опубликованных прошивок. Номер PWM обозначает аппаратный выход; роль мотора или серво задаёт микшер. Не подавайте питание на сигнальные выводы.</p>
  <label for="reference-board">Плата для справки</label><select id="reference-board"><option value="mini-v2">Mini v2</option><option value="mini-v2-vib">Mini v2 Vib</option><option value="mini">Mini</option><option value="pro">Pro</option></select>
  <div id="reference-content" aria-live="polite"><p>Загрузка справки…</p></div>
  <p><a href="diagnostics.html?v=0.2.2">Отдельные диагностические прошивки и порядок проверки</a></p>
- </section>
+ </section></div></details>
       <aside class="private-note" id="private-note" hidden>
         <span aria-hidden="true">🔒</span>
         <div><strong>Приватный каталог</strong><p>Для скачивания GitHub может попросить войти в аккаунт с доступом к репозиторию.</p></div>
       </aside>
-    <section id="inav-can-guide" class="can-guide" aria-labelledby="can-guide-title" hidden>
+    <details id="inav-can-guide" class="guide-module can-guide" data-guide-module data-guide-title="GPS и компас по CAN" hidden><summary><span class="module-heading">GPS и компас по CAN</span><span class="module-caption">Matek M10Q-3100 · INAV 10 r16</span></summary><div class="guide-module-body"><p class="module-intro">Для INAV 10 r16. Выбери свой вариант подключения и выполни шаги. Для GPS и компаса Matek одним кабелем начни с первого раздела.</p><details class="guide-chapter" id="can-matek-start" data-guide-chapter data-guide-nav-title="Matek: быстрый запуск"><summary><span>Matek: подключить GPS и компас одним кабелем</span></summary><div class="chapter-content">
+<p>После чистой установки r16 этот вариант уже настроен: <strong>CAN1, GPS и компас по DroneCAN</strong>. Используется MATEK M10Q-3100 со штатной прошивкой AP_Periph.</p>
+<ol class="setup-steps">
+<li><strong>Выбери свою плату</strong> вверху страницы, затем INAV → Dev → 10.0.0-r16. Нужен INAV Configurator 10.0. Stable r15 на INAV 9 для CAN-компаса не подходит.</li>
+<li><strong>Сохрани старую конфигурацию</strong> через Backup Config. Прошей HEX с Full Chip Erase. Чтобы использовать заводской профиль, старые GPS/MAG-настройки поверх него пока не восстанавливай.</li>
+<li><strong>Отключи питание и подключи Matek к CAN1</strong> по таблице ниже. Сверяй сигналы, а не цвета проводов.</li>
+</ol>
+<div class="can-table-wrap"><table><tr><th>Matek</th><th>Mini, разъём CAN1</th></tr><tr><td>5V</td><td>5V</td></tr><tr><td>G / GND</td><td>GND</td></tr><tr><td>C-H</td><td>CAN-H</td></tr><tr><td>C-L</td><td>CAN-L</td></tr></table></div>
+<ol class="setup-steps" start="4">
+<li><strong>Включи питание.</strong> Вывод TX2 при подключении по CAN не нужен.</li>
+<li><strong>Открой DroneCAN</strong> в Configurator: должен появиться Matek. Затем проверь датчики по разделу «Проверить результат».</li>
+</ol>
+<p class="setup-result"><strong>Готово:</strong> GPS и компас используют один CAN-кабель. При чистой установке команды не нужны.</p>
+<details class="advanced-note"><summary>Настройки уже менялись? Вернуть профиль Matek на CAN1</summary><p>Этот блок меняет только CAN, GPS и компас, без сброса остальных настроек.</p><pre><code>feature GPS
+set dronecan_bus = 1
+set dronecan_bitrate_kbps = 1000
+set dronecan_node_id = 1
+set dronecan_use_dna_server = ON
+set gps_provider = DRONECAN
+set mag_hardware = DRONECAN
+save</code></pre></details></div></details><details class="guide-chapter" id="can-choose-port" data-guide-chapter><summary><span>Выбрать CAN1 или CAN2</span></summary><div class="chapter-content">
+<p>По умолчанию выбран CAN1. Одновременно работает <strong>одна шина</strong>: GPS и CAN-компас должны быть на ней.</p>
+<ol class="setup-steps"><li>Чтобы выбрать CAN2, скопируй блок в CLI и дождись перезапуска.</li></ol><pre><code>set dronecan_bus = 2
+save</code></pre>
+<ol class="setup-steps" start="2"><li>Отключи питание, переставь кабель в CAN2 и включи плату.</li><li>Проверь модуль во вкладке DroneCAN.</li></ol>
+<details class="advanced-note"><summary>Вернуть CAN1</summary><pre><code>set dronecan_bus = 1
+save</code></pre></details>
+<p>GPS на CAN1 и компас на CAN2 одновременно в r16 недоступны. Используй общую CAN-шину или вариант с GPS по UART.</p></div></details><details class="guide-chapter" id="can-gps-only" data-guide-chapter><summary><span>Нужен только GPS по CAN</span></summary><div class="chapter-content">
+<p>Кабель и выбранный CAN-порт остаются прежними.</p><ol class="setup-steps"><li>Скопируй блок в CLI и дождись перезапуска.</li></ol><pre><code>feature GPS
+set gps_provider = DRONECAN
+set mag_hardware = NONE
+save</code></pre>
+<ol class="setup-steps" start="2"><li>Вынеси модуль на открытое место и проверь спутники во вкладке GPS.</li></ol>
+<p class="setup-result"><strong>Результат:</strong> GPS включён, компас выключен.</p></div></details><details class="guide-chapter" id="can-compass-only" data-guide-chapter><summary><span>Нужен только компас по CAN</span></summary><div class="chapter-content">
+<p>Этот вариант выключает GPS. Подключение и выбранный CAN-порт не меняются.</p><ol class="setup-steps"><li>Вставь блок в CLI.</li></ol><pre><code>feature -GPS
+set mag_hardware = DRONECAN
+save</code></pre>
+<ol class="setup-steps" start="2"><li>После перезапуска проверь MAG=OK командой status. Откалибруй компас после окончательного монтажа.</li></ol>
+<p class="setup-result"><strong>Результат:</strong> используется CAN-компас, GPS выключен.</p></div></details><details class="guide-chapter" id="can-uart-gps" data-guide-chapter data-guide-nav-title="GPS по UART + компас по CAN"><summary><span>Один Matek: GPS по UART, компас по CAN</span></summary><div class="chapter-content">
+<p>Выход <strong>TX2 у M10Q-3100 передаёт MSP</strong>. UBLOX для этого выхода выбирать нельзя.</p>
+<ol class="setup-steps">
+<li>На выключенной плате оставь CAN-кабель и дополнительно соедини <strong>TX2 Matek → RX свободного UART Mini</strong>. GND общий; питание модуля достаточно подать один раз.</li>
+<li>В Ports на выбранном UART включи <strong>MSP, 115200</strong>. Функцию GPS на этом UART не включай.</li>
+<li>Вставь блок в CLI и дождись перезапуска.</li>
+</ol><pre><code>feature GPS
+set gps_provider = MSP
+set mag_hardware = DRONECAN
+save</code></pre>
+<ol class="setup-steps" start="4"><li>Проверь обновление GPS и MAG=OK.</li></ol>
+<p class="setup-result"><strong>Результат:</strong> GPS приходит по UART/MSP, компас — по выбранному CAN. CAN-порт этим блоком не меняется.</p></div></details><details class="guide-chapter" id="can-check" data-guide-chapter><summary><span>Проверить результат</span></summary><div class="chapter-content">
+<ol class="setup-steps"><li>В Configurator открой <strong>DroneCAN</strong>: в списке должен быть Matek.</li><li>В CLI вставь блок ниже. Для заводского профиля ожидаются CAN1, 1000 кбит/с и DRONECAN для обоих датчиков. В status проверь <strong>MAG=OK</strong>.</li></ol><pre><code>get dronecan_bus
+get dronecan_bitrate_kbps
+get gps_provider
+get mag_hardware
+status</code></pre>
+<ol class="setup-steps" start="3"><li>Откалибруй компас и проверь курс при повороте модели.</li><li>На открытом месте дождись спутников и 3D Fix. В помещении GPS может не получить Fix.</li></ol>
+<p>Наличие CAN-узла ещё не доказывает работу обоих датчиков. Проверь GPS и компас отдельно.</p></div></details><details class="guide-chapter" id="can-help" data-guide-chapter><summary><span>Если не заработало</span></summary><div class="chapter-content">
+<dl class="help-list">
+<dt>Matek не виден во вкладке DroneCAN</dt><dd>Проверь питание, GND, выбранный CAN-разъём и соединения H→H, L→L. На обеих сторонах должна быть одинаковая скорость; на двух концах шины — терминаторы 120 Ом.</dd>
+<dt>Узел виден, но компас не работает</dt><dd>Проверь mag_hardware = DRONECAN и передачу компаса на самом модуле.</dd>
+<dt>GPS не получает Fix</dt><dd>Проверь источник: для CAN нужен DRONECAN, для TX2 Matek — MSP. Вынеси модуль на открытое место.</dd>
+<dt>Перестало работать после восстановления настроек</dt><dd>Восстановленная конфигурация могла заменить профиль Matek. Открой первый раздел и примени блок возврата профиля.</dd>
+</dl></div></details><details class="guide-chapter" id="can-advanced" data-guide-chapter data-guide-nav-title="Для опытных"><summary><span>Для опытных: распиновка, протокол и дополнительные варианты</span></summary><div class="chapter-content"><p>Здесь сохранена полная техническая инструкция, включая отдельный UART GPS, внешний I²C-компас, сообщения AP_Periph и ограничения проверки.</p>
 <h2 id="can-guide-title">INAV 10 r16: DroneCAN и MATEK M10Q-3100</h2>
 <p>Основа — INAV 10.0.0-rc2, определения всех трёх плат перенесены из r15. Это предварительный выпуск INAV 10. Нужен INAV Configurator 10.0; для старых образов 9.1 используйте Configurator 9.1.</p>
 <h3>Заводской профиль: GPS и компас одним кабелем</h3>
@@ -246,8 +308,8 @@ status</code></pre>
 <p>Собраны три цели; пройдены программные тесты сообщений AP_Periph, масштаба, устаревания данных, выбора источника и GPIO CAN1/CAN2 по hwdef. Физическое получение GPS/компаса от конкретного M10Q-3100 в этой сборке ещё нужно подтвердить на стенде.</p>
 <p><a href="https://www.mateksys.com/?portfolio=m10q-3100" target="_blank" rel="noreferrer">Документация Matek M10Q-3100</a></p>
 <p><a href="https://inavflight.github.io/docs/next/advanced-features/dronecan/" target="_blank" rel="noreferrer">Документация INAV DroneCAN</a></p>
-</section>
-</main>
+</div></details></div></details>
+</main></div>
 
     <footer class="shell footer">
       <span id="footer-firmware">MYBOXES / ARDUPILOT</span>
@@ -270,8 +332,9 @@ status</code></pre>
     </template>
 
     <script src="live-catalog.js?v=2" defer></script>
-    <script src="app.js?v=5" defer></script>
+    <script src="app.js?v=6" defer></script>
     <script src="hardware-reference.js?v=2" defer></script>
     <script src="copy-commands.js?v=1" defer></script>
+    <script src="guide-navigation.js?v=1" defer></script>
   </body>
 </html>
