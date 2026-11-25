@@ -174,3 +174,17 @@ h1 em { color: var(--orange); font-style: normal; font-weight: 500; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* INAV CAN setup documentation */
+.can-guide { margin: 0 0 56px; padding: clamp(18px,4vw,36px); border: 1px solid var(--line); border-radius: 18px; background: rgba(17,22,34,.5); font-size: 1rem; line-height: 1.65; overflow-wrap: anywhere; }
+.can-guide h2 { font-size: clamp(1.5rem,3vw,2rem); line-height: 1.2; margin-top: 0; }
+.can-guide h3 { margin: 2rem 0 .75rem; font-size: 1.2rem; }
+.can-guide p, .can-guide li { color: var(--muted); }
+.can-guide code { color: var(--cyan); font-size: .9em; }
+.can-guide pre { overflow-x: auto; padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: #080d16; white-space: pre; }
+.can-guide a { color: var(--cyan); }
+.can-table-wrap { overflow-x: auto; }
+.can-guide table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.can-guide th, .can-guide td { text-align: left; padding: 12px; border: 1px solid var(--line); min-width: 140px; }
+.can-guide th { color: var(--text); }
+.can-guide[hidden] { display: none; }

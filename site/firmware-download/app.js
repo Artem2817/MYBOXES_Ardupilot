@@ -27,6 +27,7 @@ const elements = {
   footerFirmware: document.querySelector("#footer-firmware"),
   ardupilotGuide: document.querySelector("#ardupilot-guide"),
   inavGuide: document.querySelector("#inav-guide"),
+  canGuide: document.querySelector("#inav-can-guide"),
   vibDescription: document.querySelector("#vib-description"),
   vehicleFilter: document.querySelector("#vehicle-filter"),
   vehicle: document.querySelector("#vehicle-select"),
@@ -227,6 +228,7 @@ function applyStateToControls() {
   elements.vehicleFilter.hidden = inav;
   elements.ardupilotGuide.hidden = inav;
   elements.inavGuide.hidden = !inav;
+  elements.canGuide.hidden = !inav;
   elements.vibDescription.textContent = inav ? "С виброизоляцией · выносной модуль" : "С виброизоляцией · два IMU";
   elements.vehicle.value = state.vehicle;
   elements.channel.value = state.channel;

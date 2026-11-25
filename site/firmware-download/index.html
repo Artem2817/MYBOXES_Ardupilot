@@ -9,7 +9,7 @@
       content="Каталог прошивок ArduPilot и INAV для полётных контроллеров MYBOXES H743"
     />
     <title>MYBOXES Firmware</title>
-    <link rel="stylesheet" href="styles.css?v=2" />
+    <link rel="stylesheet" href="styles.css?v=can16?v=2" />
   </head>
   <body>
     <div class="background-grid" aria-hidden="true"></div>
@@ -138,10 +138,95 @@
           <article><span class="format hex">HEX</span><h3>Первая прошивка</h3><p>Образ с загрузчиком для STM32CubeProgrammer, DFU или SWD.</p></article>
         </div>
         <div class="guide-grid" id="inav-guide" hidden>
-          <article><span class="format hex">HEX</span><h3>Локальная прошивка через DFU</h3><p>Выберите HEX в INAV Configurator 9.1. Тип аппарата настраивается в Mixer после прошивки.</p></article>
+          <article><span class="format hex">HEX</span><h3>Локальная прошивка через DFU</h3><p>Для INAV 10 нужен Configurator 10.0, для INAV 9.1 — Configurator 9.1. Выберите соответствующий HEX. Тип аппарата настраивается в Mixer после прошивки.</p></article>
           <article><h3>Переход с ArduPilot</h3><p>Сохраните параметры и образ ArduPilot для возврата. INAV HEX записывается поверх загрузчика ArduPilot.</p></article>
         </div>
       </section>
+
+<section id="inav-can-guide" class="can-guide" aria-labelledby="can-guide-title" hidden>
+<h2 id="can-guide-title">INAV 10 r16: DroneCAN и MATEK M10Q-3100</h2>
+<p>Основа — INAV 10.0.0-rc2, определения всех трёх плат перенесены из r15. Это предварительный выпуск INAV 10. Нужен INAV Configurator 10.0; для старых образов 9.1 используйте Configurator 9.1.</p>
+<h3>Заводской профиль: GPS и компас одним кабелем</h3>
+<p>После чистой установки r16 для Mini v1, Mini v2 и Mini v2 VIB заданы:</p>
+<ul>
+<li>CAN1 (<code>dronecan_bus = 1</code>), 1000 кбит/с;</li>
+<li>ID полётника 1, DNA-сервер включён;</li>
+<li>функция GPS включена, <code>gps_provider = DRONECAN</code>;</li>
+<li><code>mag_hardware = DRONECAN</code>;</li>
+<li>обычный PWM для моторов, DShot выбирается отдельно;</li>
+<li>поворот IMU Mini v1 из r15: 180° по крену.</li>
+</ul>
+<p>Профиль рассчитан на MATEK M10Q-3100 со штатной AP_Periph MatekL431-GPS. Один модуль передаёт GPS и RM3100-компас по общей шине. На полётнике выбирается DRONECAN, а не локальный RM3100 по I²C/SPI.</p>
+<p>Перед переходом с 9.x сохраните Backup Config в Firmware Flasher Configurator 10.0 и прошейте HEX с Full Chip Erase. Restore Config заменяет заводские значения сохранёнными настройками. Для заводского профиля Matek не восстанавливайте поверх него старые GPS/UART/MAG-настройки без проверки.</p>
+<h3>Подключение MATEK M10Q-3100</h3>
+<p>Это AP_Periph-узел с u-blox M10 и RM3100. CAN и UART/MSP — разные интерфейсы. Пример относится к M10Q-3100; полное обозначение проверяйте на модуле, не по сокращённому названию магазина.</p>
+<div class="can-table-wrap"><table>
+<tr><th>M10Q-3100</th><th>MYBOX Mini</th></tr>
+<tr><td>5V</td><td>Питание 5V, фактически 4,5–5,3 В</td></tr>
+<tr><td>G / GND</td><td>GND</td></tr>
+<tr><td>C-H / CAN-H</td><td>CAN-H выбранного порта</td></tr>
+<tr><td>C-L / CAN-L</td><td>CAN-L того же порта</td></tr>
+</table></div>
+<p>Перечислены сигналы, а не порядок контактов в разъёме. Проверяйте маркировку кабеля. TX2 при CAN-подключении не используется. Убедитесь, что CAN-разъём получает питание: USB полётника не на всех схемах питает внешний модуль.</p>
+<p>Терминация — 120 Ом на двух физических концах шины. На обесточенной шине между CAN-H и CAN-L ожидается около 60 Ом при двух терминаторах. Не добавляйте резисторы, если они уже установлены на обоих концах.</p>
+<p>Для автоматического подключения модуль должен использовать DroneCAN 1 Мбит/с и поддерживать DNA. Если назначен статический ID, он должен отличаться от ID полётника 1. Прошивка полётника не перепрошивает модуль и не исправляет его ранее изменённые настройки. Появление узла и получение спутникового 3D Fix — разные этапы.</p>
+<h3>Выбор CAN1 или CAN2</h3>
+<p>Одновременно активен один интерфейс. Выбор сохраняется после <code>save</code> и перезагрузки. GPS и CAN-компас используют общий выбранный интерфейс.</p>
+<p>Переставьте кабель на CAN2 и задайте:</p>
+<pre><code>set dronecan_bus = 2
+save</code></pre>
+<p>Вернуть CAN1:</p>
+<pre><code>set dronecan_bus = 1
+save</code></pre>
+<div class="can-table-wrap"><table>
+<tr><th>Плата</th><th>CAN1 RX / TX / Silent</th><th>CAN2 RX / TX / Silent</th></tr>
+<tr><td>Mini v1</td><td>PD0 / PD1 / PB3</td><td>PD9 / PD10 / отдельный Silent не задан в hwdef</td></tr>
+<tr><td>Mini v2</td><td>PD0 / PD1 / PA8</td><td>PB5 / PB6 / PD7</td></tr>
+<tr><td>Mini v2 VIB</td><td>PD0 / PD1 / PA8</td><td>PB5 / PB6 / PD7</td></tr>
+</table></div>
+<p>Это выводы STM32 из hwdef для проверки платы. Модуль подключается к CAN-H/CAN-L после трансивера, не к этим выводам MCU.</p>
+<h3>GPS и компас вместе на CAN1</h3>
+<p>Это заводской режим. Для уже настроенной платы его можно восстановить без сброса остальных параметров:</p>
+<pre><code>feature GPS
+set dronecan_bus = 1
+set dronecan_bitrate_kbps = 1000
+set dronecan_node_id = 1
+set dronecan_use_dna_server = ON
+set gps_provider = DRONECAN
+set mag_hardware = DRONECAN
+save</code></pre>
+<p>Для обоих датчиков на CAN2 используйте <code>dronecan_bus = 2</code>. Назначать GPS на UART в Ports для CAN-модуля не требуется.</p>
+<h3>Только GPS по CAN, компас выключен</h3>
+<p>Полётник будет использовать только GPS, даже если Matek продолжает передавать оба датчика:</p>
+<pre><code>feature GPS
+set dronecan_bus = 1
+set gps_provider = DRONECAN
+set mag_hardware = NONE
+save</code></pre>
+<p>Для отдельного компаса на I²C вместо NONE задайте <code>mag_hardware = AUTO</code>, подключите его к назначенной внешней I²C-шине и проверьте MAG. Автопоиск не подменяет его CAN-компасом.</p>
+<h3>Только компас по CAN, GPS выключен</h3>
+<pre><code>feature -GPS
+set dronecan_bus = 1
+set mag_hardware = DRONECAN
+save</code></pre>
+<p>Для отдельного GPS по UART включите <code>feature GPS</code>, задайте <code>gps_provider = UBLOX</code> и назначьте GPS нужному UART в Ports. CAN-компас при этом сохраняется. Для UART/MSP-выхода Matek нельзя выбирать UBLOX: это другой протокол.</p>
+<h3>GPS на CAN1, компас на CAN2</h3>
+<p>В r16 такой вариант недоступен: <code>dronecan_bus</code> выбирает один общий физический интерфейс. Разместите оба датчика на CAN1, оба на CAN2 либо сочетайте CAN с отдельными UART/I²C. Несколько CAN-устройств на выбранной шине допустимы при разных ID. Два интерфейса одновременно этот режим драйвера не обслуживает.</p>
+<h3>Проверка после подключения</h3>
+<p>В Configurator 10.0 откройте DroneCAN: должен появиться узел Matek. В CLI:</p>
+<pre><code>get dronecan_bus
+get dronecan_bitrate_kbps
+get gps_provider
+get mag_hardware
+status</code></pre>
+<p>Ожидаются выбранная шина, 1000 кбит/с, DRONECAN для обоих датчиков и MAG=OK после поступления данных. Проверьте обновление координат и спутников; 3D Fix получают на открытом месте. Если узел есть, а MAG нет, проверьте передачу магнитометра на самом AP_Periph-узле.</p>
+<p>Поддержаны MagneticFieldStrength 1001, MagneticFieldStrength2 1002 и HiRes 1043 AP_Periph. Гаусс преобразуются в миллигаусс. Без обновлений более 500 мс компас перестаёт считаться исправным. Первая корректная пара node ID / sensor ID фиксируется до перезапуска, чтобы не смешивать разные компасы.</p>
+<p>После установки откалибруйте компас и проверьте курс при повороте модели. Не переносите <code>align_mag = CW90</code> из инструкции UART/MSP на CAN автоматически: это другой тракт данных. Выравнивание проверяют для фактического монтажа.</p>
+<h3>Проверки сборки</h3>
+<p>Собраны три цели; пройдены программные тесты сообщений AP_Periph, масштаба, устаревания данных, выбора источника и GPIO CAN1/CAN2 по hwdef. Физическое получение GPS/компаса от конкретного M10Q-3100 в этой сборке ещё нужно подтвердить на стенде.</p>
+<p><a href="https://www.mateksys.com/?portfolio=m10q-3100" target="_blank" rel="noreferrer">Документация Matek M10Q-3100</a></p>
+<p><a href="https://inavflight.github.io/docs/next/advanced-features/dronecan/" target="_blank" rel="noreferrer">Документация INAV DroneCAN</a></p>
+</section>
 
       <aside class="private-note" id="private-note" hidden>
         <span aria-hidden="true">🔒</span>
@@ -170,6 +255,6 @@
     </template>
 
     <script src="live-catalog.js?v=1" defer></script>
-    <script src="app.js?v=4" defer></script>
+    <script src="app.js?v=5" defer></script>
   </body>
 </html>
