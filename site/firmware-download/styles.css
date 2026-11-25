@@ -175,6 +175,35 @@ h1 em { color: var(--orange); font-style: normal; font-weight: 500; }
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
 
+/* Additive hardware help: existing catalog layout and download rules are unchanged. */
+.reference-table-wrap { overflow-x:auto; margin:1.25rem 0; }
+.reference-table { width:100%;border-collapse:collapse;font-size:.95rem;min-width:600px; }
+.reference-table th,.reference-table td { padding:.75rem;text-align:left;border-bottom:1px solid #293349; }
+.reference-table th { color:#a8b7cd; }
+.hardware-reference p { line-height:1.7;color:#b8c8da;max-width:100ch; }
+.hardware-reference h3 { margin-top:2rem; }
+.hardware-reference a { color:#8cebd4; }
+#reference-board { margin:.75rem 0;min-height:44px;max-width:100%; }
+.diagnostic-warning { padding:1.25rem;border:1px solid #be8c42;border-radius:12px;background:#2b2319;color:#ffe2a5;line-height:1.65; }
+.diagnostic-list { display:grid;gap:1.25rem;margin:2rem 0; }
+.diagnostic-list article { padding:1.5rem;border:1px solid #293349;border-radius:14px;background:#101824; }
+.diagnostic-list a { display:inline-block;padding:.75rem 1rem;margin:.5rem .5rem .5rem 0;background:#17473f;color:#b9ffed;border-radius:7px; }
+.diagnostic-list code { display:block;overflow-wrap:anywhere;font-size:.875rem; }
+#reference-board { background:#101824;color:#e7f1fa;border:1px solid #354258;border-radius:8px;padding:.75rem 1rem;margin-left:.75rem;font-size:1rem; }
+.hardware-reference pre { white-space:pre-wrap;padding:1rem;background:#101824;border:1px solid #293349;border-radius:8px;font-size:1rem;line-height:1.6; }
+.diagnostic-simple { max-width:1100px;padding-top:2rem;padding-bottom:3rem; }
+.diagnostic-simple h1 { font-size:clamp(2.2rem,5vw,4rem);line-height:1.1;margin:2rem 0 1rem; }
+.diagnostic-simple .diag-steps { padding-left:1.5rem;line-height:1.8; }
+.diagnostic-simple .diagnostic-list { grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin:1.2rem 0; }
+.diagnostic-simple .diagnostic-list article { padding:1.25rem; }
+.diagnostic-simple .diagnostic-list h3 { margin:0 0 .5rem; }
+.diagnostic-simple .diagnostic-list p { line-height:1.6;color:#b8c8da; }
+.diag-exe { display:inline-block;padding:1rem 1.5rem;border-radius:9px;background:#35d6ed;color:#07121b;font-size:1.1rem;font-weight:700;margin:.75rem 0 1.5rem; }
+.diagnostic-simple details { margin-top:1.5rem;padding:1rem;border:1px solid #293349;border-radius:10px;line-height:1.7; }
+.diagnostic-simple summary { cursor:pointer;font-size:1rem;font-weight:600; }
+.hardware-reference details { border:1px solid #293349;border-radius:9px;padding:1rem;margin:1rem 0; }
+.hardware-reference summary { cursor:pointer;color:#8cebd4;font-weight:600; }
+
 /* INAV CAN setup documentation */
 .can-guide { margin: 0 0 56px; padding: clamp(18px,4vw,36px); border: 1px solid var(--line); border-radius: 18px; background: rgba(17,22,34,.5); font-size: 1rem; line-height: 1.65; overflow-wrap: anywhere; }
 .can-guide h2 { font-size: clamp(1.5rem,3vw,2rem); line-height: 1.2; margin-top: 0; }

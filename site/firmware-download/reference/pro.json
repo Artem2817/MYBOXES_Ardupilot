@@ -1,0 +1,485 @@
+{
+  "board": "pro",
+  "name": "MyboxH743 Pro",
+  "mcu": "STM32H743xx + STM32F103xB IOMCU",
+  "pins": [
+    {
+      "pin": "PA11",
+      "signal": "OTG_FS_DM",
+      "config": "OTG1",
+      "source": "hwdef.dat:32"
+    },
+    {
+      "pin": "PA12",
+      "signal": "OTG_FS_DP",
+      "config": "OTG1",
+      "source": "hwdef.dat:33"
+    },
+    {
+      "pin": "PA13",
+      "signal": "JTMS-SWDIO",
+      "config": "SWD",
+      "source": "hwdef.dat:35"
+    },
+    {
+      "pin": "PA14",
+      "signal": "JTCK-SWCLK",
+      "config": "SWD",
+      "source": "hwdef.dat:36"
+    },
+    {
+      "pin": "PA5",
+      "signal": "SPI1_SCK",
+      "config": "SPI1",
+      "source": "hwdef.dat:39"
+    },
+    {
+      "pin": "PA6",
+      "signal": "SPI1_MISO",
+      "config": "SPI1",
+      "source": "hwdef.dat:40"
+    },
+    {
+      "pin": "PD7",
+      "signal": "SPI1_MOSI",
+      "config": "SPI1",
+      "source": "hwdef.dat:41"
+    },
+    {
+      "pin": "PC15",
+      "signal": "IMU1_CS",
+      "config": "CS",
+      "source": "hwdef.dat:42"
+    },
+    {
+      "pin": "PB12",
+      "signal": "MAX7456_CS",
+      "config": "CS",
+      "source": "hwdef.dat:45"
+    },
+    {
+      "pin": "PB13",
+      "signal": "SPI2_SCK",
+      "config": "SPI2",
+      "source": "hwdef.dat:46"
+    },
+    {
+      "pin": "PB14",
+      "signal": "SPI2_MISO",
+      "config": "SPI2",
+      "source": "hwdef.dat:47"
+    },
+    {
+      "pin": "PB15",
+      "signal": "SPI2_MOSI",
+      "config": "SPI2",
+      "source": "hwdef.dat:48"
+    },
+    {
+      "pin": "PB3",
+      "signal": "SPI3_SCK",
+      "config": "SPI3",
+      "source": "hwdef.dat:51"
+    },
+    {
+      "pin": "PB4",
+      "signal": "SPI3_MISO",
+      "config": "SPI3",
+      "source": "hwdef.dat:52"
+    },
+    {
+      "pin": "PB5",
+      "signal": "SPI3_MOSI",
+      "config": "SPI3",
+      "source": "hwdef.dat:53"
+    },
+    {
+      "pin": "PD4",
+      "signal": "EXT_CS1",
+      "config": "CS",
+      "source": "hwdef.dat:56"
+    },
+    {
+      "pin": "PE2",
+      "signal": "EXT_CS2",
+      "config": "CS",
+      "source": "hwdef.dat:57"
+    },
+    {
+      "pin": "PE11",
+      "signal": "IMU2_CS",
+      "config": "CS",
+      "source": "hwdef.dat:60"
+    },
+    {
+      "pin": "PC13",
+      "signal": "IMU3_CS",
+      "config": "CS",
+      "source": "hwdef.dat:61"
+    },
+    {
+      "pin": "PE12",
+      "signal": "SPI4_SCK",
+      "config": "SPI4",
+      "source": "hwdef.dat:62"
+    },
+    {
+      "pin": "PE13",
+      "signal": "SPI4_MISO",
+      "config": "SPI4",
+      "source": "hwdef.dat:63"
+    },
+    {
+      "pin": "PE14",
+      "signal": "SPI4_MOSI",
+      "config": "SPI4",
+      "source": "hwdef.dat:64"
+    },
+    {
+      "pin": "PB6",
+      "signal": "I2C1_SCL",
+      "config": "I2C1",
+      "source": "hwdef.dat:70"
+    },
+    {
+      "pin": "PB7",
+      "signal": "I2C1_SDA",
+      "config": "I2C1",
+      "source": "hwdef.dat:71"
+    },
+    {
+      "pin": "PB10",
+      "signal": "I2C2_SCL",
+      "config": "I2C2",
+      "source": "hwdef.dat:74"
+    },
+    {
+      "pin": "PB11",
+      "signal": "I2C2_SDA",
+      "config": "I2C2",
+      "source": "hwdef.dat:75"
+    },
+    {
+      "pin": "PC0",
+      "signal": "BATT_VOLTAGE_SENS",
+      "config": "ADC1 SCALE(1)",
+      "source": "hwdef.dat:78"
+    },
+    {
+      "pin": "PC1",
+      "signal": "BATT_CURRENT_SENS",
+      "config": "ADC1 SCALE(1)",
+      "source": "hwdef.dat:79"
+    },
+    {
+      "pin": "PA4",
+      "signal": "BATT2_VOLTAGE_SENS",
+      "config": "ADC1 SCALE(1)",
+      "source": "hwdef.dat:80"
+    },
+    {
+      "pin": "PA7",
+      "signal": "BATT2_CURRENT_SENS",
+      "config": "ADC1 SCALE(1)",
+      "source": "hwdef.dat:81"
+    },
+    {
+      "pin": "PC4",
+      "signal": "PRESSURE_SENS",
+      "config": "ADC1 SCALE(2)",
+      "source": "hwdef.dat:94"
+    },
+    {
+      "pin": "PC5",
+      "signal": "RSSI_ADC",
+      "config": "ADC1",
+      "source": "hwdef.dat:97"
+    },
+    {
+      "pin": "PC2",
+      "signal": "LED0",
+      "config": "OUTPUT LOW GPIO(90)",
+      "source": "hwdef.dat:104"
+    },
+    {
+      "pin": "PE4",
+      "signal": "LED1",
+      "config": "OUTPUT LOW GPIO(91)",
+      "source": "hwdef.dat:105"
+    },
+    {
+      "pin": "PA10",
+      "signal": "USART1_RX",
+      "config": "USART1",
+      "source": "hwdef.dat:113"
+    },
+    {
+      "pin": "PA9",
+      "signal": "USART1_TX",
+      "config": "USART1",
+      "source": "hwdef.dat:114"
+    },
+    {
+      "pin": "PD5",
+      "signal": "USART2_TX",
+      "config": "USART2",
+      "source": "hwdef.dat:117"
+    },
+    {
+      "pin": "PD6",
+      "signal": "USART2_RX",
+      "config": "USART2",
+      "source": "hwdef.dat:118"
+    },
+    {
+      "pin": "PD9",
+      "signal": "USART3_RX",
+      "config": "USART3",
+      "source": "hwdef.dat:121"
+    },
+    {
+      "pin": "PD8",
+      "signal": "USART3_TX",
+      "config": "USART3",
+      "source": "hwdef.dat:122"
+    },
+    {
+      "pin": "PB9",
+      "signal": "UART4_TX",
+      "config": "UART4",
+      "source": "hwdef.dat:125"
+    },
+    {
+      "pin": "PB8",
+      "signal": "UART4_RX",
+      "config": "UART4",
+      "source": "hwdef.dat:126"
+    },
+    {
+      "pin": "PC6",
+      "signal": "USART6_TX",
+      "config": "USART6",
+      "source": "hwdef.dat:129"
+    },
+    {
+      "pin": "PC7",
+      "signal": "USART6_RX",
+      "config": "USART6",
+      "source": "hwdef.dat:130"
+    },
+    {
+      "pin": "PE7",
+      "signal": "UART7_RX",
+      "config": "UART7",
+      "source": "hwdef.dat:133"
+    },
+    {
+      "pin": "PE8",
+      "signal": "UART7_TX",
+      "config": "UART7",
+      "source": "hwdef.dat:134"
+    },
+    {
+      "pin": "PE10",
+      "signal": "UART7_CTS",
+      "config": "UART7",
+      "source": "hwdef.dat:135"
+    },
+    {
+      "pin": "PE9",
+      "signal": "UART7_RTS",
+      "config": "UART7",
+      "source": "hwdef.dat:136"
+    },
+    {
+      "pin": "PE0",
+      "signal": "UART8_RX",
+      "config": "UART8",
+      "source": "hwdef.dat:139"
+    },
+    {
+      "pin": "PE1",
+      "signal": "UART8_TX",
+      "config": "UART8",
+      "source": "hwdef.dat:140"
+    },
+    {
+      "pin": "PD0",
+      "signal": "CAN1_RX",
+      "config": "CAN1",
+      "source": "hwdef.dat:143"
+    },
+    {
+      "pin": "PD1",
+      "signal": "CAN1_TX",
+      "config": "CAN1",
+      "source": "hwdef.dat:144"
+    },
+    {
+      "pin": "PD3",
+      "signal": "GPIO_CAN1_SILENT",
+      "config": "OUTPUT PUSHPULL SPEED_LOW LOW GPIO(70)",
+      "source": "hwdef.dat:145"
+    },
+    {
+      "pin": "PD14",
+      "signal": "TIM4_CH3",
+      "config": "TIM4 PWM(1) GPIO(50)",
+      "source": "hwdef.dat:148"
+    },
+    {
+      "pin": "PD15",
+      "signal": "TIM4_CH4",
+      "config": "TIM4 PWM(2) GPIO(51)",
+      "source": "hwdef.dat:149"
+    },
+    {
+      "pin": "PE5",
+      "signal": "TIM15_CH1",
+      "config": "TIM15 PWM(3) GPIO(52)",
+      "source": "hwdef.dat:150"
+    },
+    {
+      "pin": "PE6",
+      "signal": "TIM15_CH2",
+      "config": "TIM15 PWM(4) GPIO(53)",
+      "source": "hwdef.dat:151"
+    },
+    {
+      "pin": "PA8",
+      "signal": "TIM1_CH1",
+      "config": "TIM1 PWM(5) GPIO(54)",
+      "source": "hwdef.dat:152"
+    },
+    {
+      "pin": "PB2",
+      "signal": "PWM_VOLT_SEL",
+      "config": "OUTPUT HIGH GPIO(3)",
+      "source": "hwdef.dat:158"
+    },
+    {
+      "pin": "PC8",
+      "signal": "SDMMC1_D0",
+      "config": "SDMMC1",
+      "source": "hwdef.dat:164"
+    },
+    {
+      "pin": "PC9",
+      "signal": "SDMMC1_D1",
+      "config": "SDMMC1",
+      "source": "hwdef.dat:165"
+    },
+    {
+      "pin": "PC10",
+      "signal": "SDMMC1_D2",
+      "config": "SDMMC1",
+      "source": "hwdef.dat:166"
+    },
+    {
+      "pin": "PC11",
+      "signal": "SDMMC1_D3",
+      "config": "SDMMC1",
+      "source": "hwdef.dat:167"
+    },
+    {
+      "pin": "PC12",
+      "signal": "SDMMC1_CK",
+      "config": "SDMMC1",
+      "source": "hwdef.dat:168"
+    },
+    {
+      "pin": "PD2",
+      "signal": "SDMMC1_CMD",
+      "config": "SDMMC1",
+      "source": "hwdef.dat:169"
+    },
+    {
+      "pin": "PD10",
+      "signal": "PINIO1",
+      "config": "OUTPUT GPIO(81) LOW",
+      "source": "hwdef.dat:172"
+    },
+    {
+      "pin": "PD11",
+      "signal": "PINIO2",
+      "config": "OUTPUT GPIO(82) LOW",
+      "source": "hwdef.dat:173"
+    }
+  ],
+  "outputs": [
+    {
+      "channel": 1,
+      "pin": "PD14",
+      "timer": "TIM4_CH3",
+      "connector": "AUX1 / SERVO9"
+    },
+    {
+      "channel": 2,
+      "pin": "PD15",
+      "timer": "TIM4_CH4",
+      "connector": "AUX2 / SERVO10"
+    },
+    {
+      "channel": 3,
+      "pin": "PE5",
+      "timer": "TIM15_CH1",
+      "connector": "AUX3 / SERVO11"
+    },
+    {
+      "channel": 4,
+      "pin": "PE6",
+      "timer": "TIM15_CH2",
+      "connector": "AUX4 / SERVO12"
+    },
+    {
+      "channel": 5,
+      "pin": "PA8",
+      "timer": "TIM1_CH1",
+      "connector": "PA8 предусмотрен для WS2812; не назначайте серво без проверки конфигурации"
+    }
+  ],
+  "iomcu_outputs": [
+    {
+      "channel": 1,
+      "pin": "PA0",
+      "timer": "TIM2_CH1"
+    },
+    {
+      "channel": 2,
+      "pin": "PA1",
+      "timer": "TIM2_CH2"
+    },
+    {
+      "channel": 3,
+      "pin": "PB8",
+      "timer": "TIM4_CH3"
+    },
+    {
+      "channel": 4,
+      "pin": "PB9",
+      "timer": "TIM4_CH4"
+    },
+    {
+      "channel": 5,
+      "pin": "PA6",
+      "timer": "TIM3_CH1"
+    },
+    {
+      "channel": 6,
+      "pin": "PA7",
+      "timer": "TIM3_CH2"
+    },
+    {
+      "channel": 7,
+      "pin": "PB0",
+      "timer": "TIM3_CH3"
+    },
+    {
+      "channel": 8,
+      "pin": "PB1",
+      "timer": "TIM3_CH4"
+    }
+  ],
+  "ardupilot_source": "https://github.com/Artem2817/MYBOXES_Ardupilot/blob/main/libraries/AP_HAL_ChibiOS/hwdef/MyboxH743_pro/hwdef.dat",
+  "inav_source": null
+}

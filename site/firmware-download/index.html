@@ -9,7 +9,7 @@
       content="Каталог прошивок ArduPilot и INAV для полётных контроллеров MYBOXES H743"
     />
     <title>MYBOXES Firmware</title>
-    <link rel="stylesheet" href="styles.css?v=can16?v=2" />
+    <link rel="stylesheet" href="styles.css?v=can16" />
   </head>
   <body>
     <div class="background-grid" aria-hidden="true"></div>
@@ -20,6 +20,7 @@
             <image href="assets/myboxes-labs-logo.png" width="2560" height="1152" />
           </svg>
         </a>
+        <a class="repo-link" href="diagnostics.html?v=0.2.2">Диагностика · HEX</a>
         <a class="repo-link" id="repo-link" href="#" target="_blank" rel="noreferrer">
           GitHub
           <span aria-hidden="true">↗</span>
@@ -143,7 +144,18 @@
         </div>
       </section>
 
-<section id="inav-can-guide" class="can-guide" aria-labelledby="can-guide-title" hidden>
+<section class="format-guide hardware-reference" id="hardware-reference" aria-labelledby="reference-title">
+ <div class="section-heading compact"><div><p class="section-number">СПРАВКА ПО ПЛАТЕ</p><h2 id="reference-title">Выводы, серво и DShot</h2></div></div>
+ <p>Назначения из HWDEF и исходников опубликованных прошивок. Номер PWM обозначает аппаратный выход; роль мотора или серво задаёт микшер. Не подавайте питание на сигнальные выводы.</p>
+ <label for="reference-board">Плата для справки</label><select id="reference-board"><option value="mini-v2">Mini v2</option><option value="mini-v2-vib">Mini v2 Vib</option><option value="mini">Mini</option><option value="pro">Pro</option></select>
+ <div id="reference-content" aria-live="polite"><p>Загрузка справки…</p></div>
+ <p><a href="diagnostics.html?v=0.2.2">Отдельные диагностические прошивки и порядок проверки</a></p>
+ </section>
+      <aside class="private-note" id="private-note" hidden>
+        <span aria-hidden="true">🔒</span>
+        <div><strong>Приватный каталог</strong><p>Для скачивания GitHub может попросить войти в аккаунт с доступом к репозиторию.</p></div>
+      </aside>
+    <section id="inav-can-guide" class="can-guide" aria-labelledby="can-guide-title" hidden>
 <h2 id="can-guide-title">INAV 10 r16: DroneCAN и MATEK M10Q-3100</h2>
 <p>Основа — INAV 10.0.0-rc2, определения всех трёх плат перенесены из r15. Это предварительный выпуск INAV 10. Нужен INAV Configurator 10.0; для старых образов 9.1 используйте Configurator 9.1.</p>
 <h3>Заводской профиль: GPS и компас одним кабелем</h3>
@@ -227,12 +239,7 @@ status</code></pre>
 <p><a href="https://www.mateksys.com/?portfolio=m10q-3100" target="_blank" rel="noreferrer">Документация Matek M10Q-3100</a></p>
 <p><a href="https://inavflight.github.io/docs/next/advanced-features/dronecan/" target="_blank" rel="noreferrer">Документация INAV DroneCAN</a></p>
 </section>
-
-      <aside class="private-note" id="private-note" hidden>
-        <span aria-hidden="true">🔒</span>
-        <div><strong>Приватный каталог</strong><p>Для скачивания GitHub может попросить войти в аккаунт с доступом к репозиторию.</p></div>
-      </aside>
-    </main>
+</main>
 
     <footer class="shell footer">
       <span id="footer-firmware">MYBOXES / ARDUPILOT</span>
@@ -256,5 +263,6 @@ status</code></pre>
 
     <script src="live-catalog.js?v=1" defer></script>
     <script src="app.js?v=5" defer></script>
+    <script src="hardware-reference.js?v=2" defer></script>
   </body>
 </html>
