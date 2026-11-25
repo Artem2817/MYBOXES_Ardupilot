@@ -150,6 +150,9 @@ function renderRelease(release) {
   card.querySelector(".release-date").textContent = formatDate(release.published_at);
   card.querySelector(".release-title").textContent = `${release.board_name} · ${release.version}-r${release.revision}`;
   card.querySelector(".release-tag").textContent = release.tag;
+  const summary = releaseNotes.summary(release);
+  card.querySelector(".release-summary").textContent = summary;
+  card.querySelector(".release-summary").title = summary;
   const releaseLink = card.querySelector(".release-link");
   releaseLink.href = release.release_url;
 

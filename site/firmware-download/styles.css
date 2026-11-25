@@ -280,3 +280,8 @@ summary:focus-visible { outline: 2px solid var(--cyan); outline-offset: -3px; bo
 .chapter-menu[open] > summary::after { content: "−"; }
 
 #guide-board .guide-chapter > summary::before, #guide-board .receiver-option > summary::before { content: none; }
+
+.release-changes { padding: 18px 30px; border-bottom: 1px solid var(--line); background: rgba(71, 125, 210, .055); }
+.release-changes > span { display: block; margin-bottom: 5px; font-size: .875rem; font-weight: 650; color: var(--muted); }
+.release-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; margin: 0; font-size: 1rem; line-height: 1.5; color: var(--text); }
+@media (max-width: 640px) { .release-changes { padding-inline: 20px; } }

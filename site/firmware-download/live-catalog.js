@@ -25,6 +25,7 @@ const liveCatalog = (() => {
     return { firmware, bench_only: firmware === "inav" && channel !== "stable", board, board_name: boards[board],
       version, revision: Number(revision), channel,
       tag: release.tag_name, title: release.name || release.tag_name,
+      notes: String(release.body || "").slice(0, 12000),
       published_at: release.published_at || release.created_at, release_url: release.html_url,
       target: release.target_commitish || "", prerelease: Boolean(release.prerelease), assets };
   }

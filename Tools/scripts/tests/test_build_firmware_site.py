@@ -32,6 +32,13 @@ class FirmwareCatalogTests(unittest.TestCase):
                     self.assertEqual(result['board_name'], name)
                     self.assertEqual(result['channel'], channel)
 
+    def test_release_notes_preserved_and_bounded(self):
+        """Both cached and live catalogs retain the author's description."""
+        release = self.release('mini')
+        release['body'] = 'Изменения: обновлён драйвер.' * 1000
+        result = SITE.normalize_release(release)
+        self.assertEqual(result['notes'], release['body'][:12000])
+
     def test_hidden_and_unrelated_releases(self):
         """Drafts and unrelated tags must not enter the download catalog."""
         release = self.release('mini-v2')

@@ -132,6 +132,7 @@ def normalize_release(release: dict[str, Any], firmware: str = "ardupilot") -> d
         "channel": channel,
         "tag": tag,
         "title": release.get("name") or tag,
+        "notes": str(release.get("body") or "")[:12000],
         "published_at": release.get("published_at") or release.get("created_at"),
         "release_url": release["html_url"],
         "target": release.get("target_commitish", ""),
