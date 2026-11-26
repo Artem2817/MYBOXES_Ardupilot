@@ -93,11 +93,15 @@ jobs:
 
       - name: Build Pro Copter, Plane and Rover firmware
         env:
+          SOURCE_VERSION: ${{ inputs.version }}
+          MYBOX_BUILD_CONTAINER: ardupilot/ardupilot-dev-chibios:v0.1.3
           RELEASE_BOARD: MyboxH743_pro
           RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
         run: >-
           python3 Tools/scripts/build_myboxes_release.py
           --board "$RELEASE_BOARD"
+          --version "$SOURCE_VERSION"
+          --require-clean
           --label "$RELEASE_TAG"
           --output-dir "release/$RELEASE_BOARD"
           --use-prebuilt-iomcu
@@ -150,5 +154,5 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --title "$RELEASE_TITLE" \
-            --generate-notes \
+            --notes "Pro: H743 with matching STM32F103 IOMCU; Copter, Plane and Rover. APJ for updates; full HEX includes the bootloader. Source version, commit, toolchain and SHA-256 are recorded in the manifest. Prepared with AI assistance." \
             "${prerelease_args[@]}"

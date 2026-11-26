@@ -88,11 +88,15 @@ jobs:
 
       - name: Build Mini firmware
         env:
+          SOURCE_VERSION: ${{ inputs.version }}
+          MYBOX_BUILD_CONTAINER: ardupilot/ardupilot-dev-chibios:v0.1.3
           RELEASE_BOARD: MyboxH743_mini
           RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
         run: >-
           python3 Tools/scripts/build_myboxes_release.py
           --board "$RELEASE_BOARD"
+          --version "$SOURCE_VERSION"
+          --require-clean
           --label "$RELEASE_TAG"
           --output-dir "release/$RELEASE_BOARD"
 
@@ -144,5 +148,5 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
             --title "$RELEASE_TITLE" \
-            --generate-notes \
+            --notes "Mini: ICM-42688-P, MS5611, 14 PWM outputs; Copter, Plane and Rover. APJ for updates; full HEX includes the bootloader. Source version, commit, toolchain and SHA-256 are recorded in the manifest. Prepared with AI assistance." \
             "${prerelease_args[@]}"

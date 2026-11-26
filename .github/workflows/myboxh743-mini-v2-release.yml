@@ -98,11 +98,15 @@ jobs:
 
       - name: Build board firmware
         env:
+          SOURCE_VERSION: ${{ inputs.version }}
+          MYBOX_BUILD_CONTAINER: ardupilot/ardupilot-dev-chibios:v0.1.3
           RELEASE_BOARD: ${{ matrix.board }}
           RELEASE_TAG: myboxh743-${{ matrix.variant }}-${{ needs.prepare.outputs.version_label }}
         run: >-
           python3 Tools/scripts/build_myboxes_release.py
           --board "$RELEASE_BOARD"
+          --version "$SOURCE_VERSION"
+          --require-clean
           --label "$RELEASE_TAG"
           --output-dir "release/$RELEASE_BOARD"
 

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -17,6 +18,8 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 TARGETS_FILE = ROOT / "CustomBoards" / "targets.json"
+VERSION_PATTERN = re.compile(r"FIRMWARE_VERSION\s+(\d+),(\d+),(\d+),")
+VEHICLE_SOURCES = {"copter": "ArduCopter", "plane": "ArduPlane", "rover": "Rover", "sub": "ArduSub"}
 VEHICLE_BINARIES = {
     "copter": "arducopter",
     "plane": "arduplane",
@@ -56,6 +59,54 @@ def sha256(path: Path) -> str:
         for chunk in iter(lambda: stream.read(1024 * 1024), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+
+def source_version(vehicles: list[str], requested: str | None = None) -> str:
+    versions = set()
+    for vehicle in vehicles:
+        header = ROOT / VEHICLE_SOURCES[vehicle] / "version.h"
+        match = VERSION_PATTERN.search(header.read_text(encoding="utf-8"))
+        if match is None:
+            raise ValueError(f"missing firmware version in {header}")
+        versions.add(".".join(match.groups()))
+    if len(versions) != 1:
+        raise ValueError(f"mixed source versions: {sorted(versions)}")
+    actual = versions.pop()
+    if requested is not None and actual != requested:
+        raise ValueError(f"release requests {requested}, source is {actual}")
+    return actual
+
+
+def verify_release(output: Path) -> dict[str, Any]:
+    manifests = list(output.glob("*-manifest.json"))
+    if len(manifests) != 1:
+        raise ValueError("release must contain exactly one manifest")
+    manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
+    names = set()
+    for item in manifest["files"]:
+        name = item["name"]
+        if Path(name).name != name or name in names:
+            raise ValueError(f"unsafe or duplicate asset: {name}")
+        names.add(name)
+        path = output / name
+        if not path.is_file() or path.stat().st_size != item["size"] or sha256(path) != item["sha256"]:
+            raise ValueError(f"manifest mismatch: {name}")
+    checksum_name = f'{manifest["board"]}-{manifest["release"]}-SHA256SUMS.txt'
+    checksum = output / checksum_name
+    expected_names = names | {manifests[0].name}
+    checksummed = set()
+    for line in checksum.read_text(encoding="utf-8").splitlines():
+        digest, name = line.split("  ", 1)
+        if name not in expected_names or name in checksummed or sha256(output / name) != digest:
+            raise ValueError(f"checksum mismatch: {name}")
+        checksummed.add(name)
+    if checksummed != expected_names:
+        raise ValueError("checksum list does not cover every release asset")
+    actual_names = {p.name for p in output.iterdir() if p.is_file()}
+    if actual_names != expected_names | {checksum_name}:
+        raise ValueError("unexpected files in release directory")
+    return manifest
 
 
 def build_iomcu(
@@ -102,16 +153,37 @@ def build_board(
     output: Path,
     label: str,
     compile_iomcu: bool,
+    requested_version: str | None = None,
+    require_clean: bool = False,
 ) -> None:
     hwdef_dir = ROOT / "libraries" / "AP_HAL_ChibiOS" / "hwdef" / board
     if not hwdef_dir.is_dir():
         raise FileNotFoundError(f"unknown board: {board}")
 
+    version = source_version(board_config["vehicles"], requested_version)
+    label_version = re.search(r"myboxh743-[a-z0-9-]+-(\d+\.\d+\.\d+)-r", label)
+    if label_version and label_version.group(1) != version:
+        raise ValueError("release label does not match source version")
+    dirty = bool(git_output("status", "--porcelain", "--untracked-files=no"))
+    if require_clean and dirty:
+        raise ValueError("release source contains uncommitted tracked changes")
     source_commit = git_output("rev-parse", "HEAD")
     source_description = git_output("describe", "--tags", "--always")
     vehicles = board_config["vehicles"]
 
     output.mkdir(parents=True, exist_ok=True)
+    # Only replace artifacts owned by this board and label; unrelated files are an error.
+    expected = {f"{board}-bootloader-{label}.{ext}" for ext in ("bin", "hex")}
+    for vehicle in vehicles:
+        expected.update(f"{board}-{vehicle}-{label}{suffix}" for suffix in (".apj", ".bin", "-with-bootloader.hex"))
+    if board_config.get("iomcu"):
+        io = board_config["iomcu"]
+        io_prefix = f'{board}-iomcu-{io["board"]}-{io["variant"]}-{label}'
+        expected.update(io_prefix + suffix for suffix in (".bin", ".apj", "-with-bootloader.hex"))
+    owned = expected | {f"{board}-{label}-manifest.json", f"{board}-{label}-SHA256SUMS.txt"}
+    unexpected = [p.name for p in output.iterdir() if p.name not in owned]
+    if unexpected:
+        raise ValueError(f"output directory contains unrelated files: {unexpected}")
     iomcu_manifest = None
     iomcu_config = board_config.get("iomcu")
     if iomcu_config is not None:
@@ -150,7 +222,12 @@ def build_board(
         output / f"{board}-bootloader-{label}.hex",
     )
 
-    files = sorted(path for path in output.iterdir() if path.is_file())
+    files = [output / name for name in sorted(expected)]
+    for path in files:
+        if not path.is_file() or path.stat().st_size == 0:
+            raise ValueError(f"missing or empty artifact: {path.name}")
+    compiler_path = shutil.which("arm-none-eabi-gcc")
+    compiler = subprocess.check_output([compiler_path, "--version"], text=True).splitlines()[0] if compiler_path else "not found"
     manifest = {
         "release": label,
         "board": board,
@@ -158,6 +235,11 @@ def build_board(
         "iomcu": iomcu_manifest,
         "git_commit": source_commit,
         "git_description": source_description,
+        "source_version": version,
+        "source_branch": git_output("branch", "--show-current"),
+        "git_dirty": dirty,
+        "submodules": git_output("submodule", "status", "--recursive").splitlines(),
+        "build_environment": {"compiler": compiler, "container": os.environ.get("MYBOX_BUILD_CONTAINER", "local")},
         "built_at_utc": datetime.now(timezone.utc).isoformat(),
         "files": [
             {
@@ -171,18 +253,23 @@ def build_board(
     manifest_path = output / f"{board}-{label}-manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
-    checksums = sorted(path for path in output.iterdir() if path.is_file())
+    checksums = sorted([*files, manifest_path])
     checksum_path = output / f"{board}-{label}-SHA256SUMS.txt"
     checksum_path.write_text(
         "".join(f"{sha256(path)}  {path.name}\n" for path in checksums),
         encoding="utf-8",
     )
 
+    verify_release(output)
+
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--board", required=True)
-    parser.add_argument("--label", required=True)
+    parser.add_argument("--board")
+    parser.add_argument("--label")
+    parser.add_argument("--version", help="expected version from the selected source")
+    parser.add_argument("--require-clean", action="store_true")
+    parser.add_argument("--verify-only", type=Path, help="verify an existing package without compiling")
     parser.add_argument("--output-dir", type=Path)
     parser.add_argument(
         "--use-prebuilt-iomcu",
@@ -191,6 +278,12 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    if args.verify_only:
+        verify_release(args.verify_only.resolve())
+        print("Manifest and SHA-256 verified")
+        return
+    if not args.board or not args.label:
+        parser.error("--board and --label are required for a build")
     config = json.loads(TARGETS_FILE.read_text(encoding="utf-8"))
     board_config = config.get("boards", {}).get(args.board)
     if board_config is None:
@@ -204,6 +297,8 @@ def main() -> None:
         output.resolve(),
         label,
         compile_iomcu=not args.use_prebuilt_iomcu,
+        requested_version=args.version,
+        require_clean=args.require_clean,
     )
 
 
