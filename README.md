@@ -1,3 +1,11 @@
+# MYBOXES ArduPilot
+
+[Скачать прошивки](https://artem2817.github.io/MYBOXES_Ardupilot/) · [Платы, сборка и выпуск](MYBOXES.md) · [MyboxDiag](https://github.com/Artem2817/MYBOXES_Diag)
+
+Поддерживаются Mini, Mini v2, Mini v2 Vib и Pro; Copter, Plane и Rover. Исходная база — ArduPilot 4.7.1. Автор пользовательских доработок Artem2817, разработка с помощью AI.
+
+Ниже сохранена документация исходного ArduPilot.
+
 # ArduPilot Project
 
 [![Discord](https://img.shields.io/discord/674039678562861068.svg)](https://ardupilot.org/discord)

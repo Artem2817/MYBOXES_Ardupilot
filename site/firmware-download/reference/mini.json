@@ -507,5 +507,5 @@
   "board": "mini",
   "name": "MyboxH743_mini",
   "ardupilot_source": "https://github.com/Artem2817/MYBOXES_Ardupilot/blob/main/libraries/AP_HAL_ChibiOS/hwdef/MyboxH743_mini/hwdef.dat",
-  "inav_source": "https://github.com/Artem2817/MYBOXES_INAV/blob/main/README.ru.md"
+  "inav_source": "https://github.com/Artem2817/MYBOXES_INAV/blob/inav-10/README.ru.md"
 }

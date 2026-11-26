@@ -4,6 +4,8 @@
   const selector=document.getElementById('reference-board'), content=document.getElementById('reference-content');
   if(!selector||!content)return;
   const valid=new Set(['mini','mini-v2','mini-v2-vib','pro']);let generation=0;
+  let selection={firmware:new URLSearchParams(location.search).get('firmware')||'ardupilot',line:'9',capabilities:{}};
+  let selectionKey='';
   const node=(tag,text)=>{const e=document.createElement(tag);if(text!==undefined)e.textContent=String(text);return e;};
   function table(headers,rows){const wrap=node('div');wrap.className='reference-table-wrap';const t=node('table');t.className='reference-table';const head=node('thead'),tr=node('tr');headers.forEach(h=>tr.append(node('th',h)));head.append(tr);t.append(head);const body=node('tbody');rows.forEach(row=>{const r=node('tr');row.forEach(v=>r.append(node('td',v)));body.append(r);});t.append(body);wrap.append(t);return wrap;}
   function paragraph(text){content.append(node('p',text));}
@@ -15,8 +17,16 @@
       content.append(node('h3','PWM, серво и DShot'));
       if(board==='pro')paragraph('Pro: H743 управляет FMU-выходами; основные выходы проходят через STM32F103 IOMCU. Нельзя переносить нумерацию Mini на Pro. Обычный образ IOMCU не включает DShot; отдельный DShot-образ и его настройка проверяются по документации конкретного релиза. INAV для Pro в этом каталоге не предлагается.');
       else {
-        paragraph('INAV с r10: DSHOT150, DSHOT300 и DSHOT600. Заводской протокол STANDARD. Для двух ESC рекомендуются PWM1–2 и микшер с двумя моторами; обычные сервы — PWM3–14 (Mini) или PWM3–13 (v2). Двунаправленный DShot не используется; ESC-телеметрия требует отдельного UART RX.');
-        paragraph('INAV: PWM5 и PWM8 на Mini, PWM5 и PWM12 на v2/Vib используйте с обычным PWM. У этих каналов нет отдельного DMA-запроса. Для ArduPilot доступность DShot определяется HAL, группой таймера и настройками конкретного релиза; сборка не доказывает электрические фронты на разъёме.');
+        if(selection.firmware==='inav'){
+          paragraph(selection.capabilities.dshot
+            ? 'Для этой версии доступны DSHOT150, DSHOT300 и DSHOT600; заводской протокол STANDARD. Для двух ESC используйте PWM1–2 и микшер с двумя моторами. Обычные сервы подключайте к PWM3–14 на Mini или PWM3–13 на v2/Vib.'
+            : 'Для этого выпуска используйте обычный PWM. DShot доступен в INAV 9 с r10 и в INAV 10; при выборе старого образа сверяйтесь с его описанием.');
+          if(selection.capabilities.dshot)paragraph('PWM5 и PWM8 на Mini, PWM5 и PWM12 на v2/Vib оставляйте с обычным PWM: у этих каналов нет отдельного DMA-запроса.');
+          if(selection.capabilities.escTelemetry)paragraph('Для RPM нужен совместимый телеметрический выход ESC на RX свободного UART и общий GND. В Ports выберите ESC output/telemetry. Двунаправленный DShot в этой сборке INAV не используется.');
+        }else{
+          paragraph('ArduPilot: назначьте функции моторов и серв для выбранного типа аппарата. Протокол и частота связаны с аппаратной группой таймера. Для двух ESC на PWM1–2 обычные сервы можно размещать начиная с PWM3; питание серв подаётся отдельно.');
+          paragraph('DShot включается настройками ArduPilot для поддерживаемых выходов. Перед смешением протоколов сверяйте группы таймеров в таблице ниже и описание своего выпуска.');
+        }
       }
       const groups={};(p.outputs||[]).forEach(o=>{const timer=o.timer.split('_')[0];(groups[timer]??=[]).push(o.channel);});
       content.append(table(['Выход','Вывод MCU','Таймер','Контакт / примечание'],(p.outputs||[]).map(o=>[p.board==='pro'?`FMU ${o.channel}`:`PWM${o.channel}`,o.pin,o.timer,o.connector||((board==='mini-v2'||board==='mini-v2-vib')?`J10/${15-o.channel}`:'Номер сигнального выхода по маркировке платы')])));
@@ -39,7 +49,6 @@
         content.append(node('h4','INAV — CRSF / ELRS через UART'));
         paragraph('Используйте UART2 (USART2): PD5 TX → RX приёмника, PD6 RX → TX приёмника, GND. В Ports включите Serial RX только у этого UART; в Receiver выберите CRSF. Выделенный вход отключите:');
         content.append(node('pre','set mybox_sbus_rcin = OFF\nset serialrx_provider = CRSF\nsave'));
-        paragraph('В диагностической программе для этого тракта есть отдельный тест rcin.frames. Он требует реального приёмника/генератора и минимум трёх декодированных кадров; пустой вход не засчитывается как пройденный.');
       }
       content.append(node('h3','UART, USB, CAN, I²C и остальные выводы'));
       paragraph('UART: TX контроллера подключается к RX устройства, RX — к TX, общий GND. Логические уровни 3,3 В; V_PWM — отдельное внешнее питание серв. CAN требует правильной терминальной нагрузки и общего опорного потенциала. SWD: PA13 SWDIO, PA14 SWCLK.');
@@ -50,10 +59,15 @@
         paragraph('IMU: '+p.imus.map(i=>`${i.model}, ${i.spi}, CS ${i.cs}`).join('; ')+'. Барометры: '+p.barometers.map(b=>`${b.model}, ${b.bus}, 0x${b.address.toString(16)}`).join('; ')+'.');
       }
       paragraph('Эта справка описывает назначения выводов и заявленные программные возможности. Полный электрический тракт, монтаж и совместимость внешних нагрузок проверяются измерениями.');
-      const links=node('p');for(const [label,url] of [['HWDEF ArduPilot',p.ardupilot_source],['Поддержка INAV и DShot',p.inav_source]]){if(!url)continue;const a=node('a',label);a.href=url;a.target='_blank';a.rel='noreferrer';links.append(a,document.createTextNode(' · '));}content.append(links);
+      const links=node('p');for(const [label,url] of [['HWDEF ArduPilot',p.ardupilot_source],['Поддержка INAV и DShot',p.inav_source ? 'https://github.com/Artem2817/MYBOXES_INAV/blob/inav-'+selection.line+'/README.ru.md' : null]]){if(!url)continue;const a=node('a',label);a.href=url;a.target='_blank';a.rel='noreferrer';links.append(a,document.createTextNode(' · '));}content.append(links);
     }catch(error){if(current===generation){content.replaceChildren(node('p',error.message));}}
   }
   selector.addEventListener('change',()=>load(selector.value));
-  document.querySelectorAll('.board-button[data-board]').forEach(b=>b.addEventListener('click',()=>load(b.dataset.board)));
+  document.addEventListener('mybox:selection',event=>{
+    selection=event.detail;
+    const key=JSON.stringify([selection.board,selection.firmware,selection.line,selection.capabilities]);
+    if(key===selectionKey)return;
+    selectionKey=key;load(selection.board);
+  });
   const initial=new URLSearchParams(location.search).get('board');load(valid.has(initial)?initial:'mini-v2');
 })();

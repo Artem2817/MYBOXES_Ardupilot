@@ -168,10 +168,42 @@ def build_catalog(repository: str, token: str, inav_repository: str | None = Non
     }
 
 
+def validate_diagnostics(index: dict[str, Any], repository: str) -> dict[str, Any]:
+    version = index.get("version", "")
+    if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+        raise ValueError("invalid diagnostic version")
+    expected = {"MyboxH743_mini", "MyboxH743_mini_v2", "MyboxH743_mini_v2_vib"}
+    profiles = index.get("profiles", [])
+    if len(profiles) != 3 or {p.get("profile") for p in profiles} != expected:
+        raise ValueError("incomplete diagnostic board matrix")
+    base = f"https://github.com/{repository}/releases/download/v{version}/"
+    for row in [*profiles, {"file": index.get("windows_exe", ""), "sha256": index.get("windows_sha256", "")}]:
+        url = row.get("file", "")
+        if not url.startswith(base) or "/" in url[len(base):] or not re.fullmatch(r"[0-9a-f]{64}", row.get("sha256", "")):
+            raise ValueError("invalid diagnostic download or checksum")
+    return index
+
+
+def latest_diagnostics(repository: str, token: str) -> dict[str, Any]:
+    release, _ = github_get(f"https://api.github.com/repos/{repository}/releases/latest", token)
+    asset = next((a for a in release.get("assets", []) if a["name"] == "diagnostic-index.json"
+                  and a.get("state") == "uploaded"), None)
+    if asset is None:
+        raise ValueError("diagnostic release has no index")
+    # The repository is public; never forward the API credential to an asset redirect.
+    request = urllib.request.Request(asset["browser_download_url"], headers={"User-Agent": "MYBOXES-firmware-site-builder"})
+    with urllib.request.urlopen(request, timeout=30) as response:
+        data = response.read(1024 * 1024 + 1)
+    if len(data) > 1024 * 1024:
+        raise ValueError("diagnostic index too large")
+    return validate_diagnostics(json.loads(data), repository)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repository", required=True)
     parser.add_argument("--inav-repository")
+    parser.add_argument("--diag-repository")
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
@@ -194,6 +226,13 @@ def main() -> None:
         encoding="utf-8",
     )
     (output / ".nojekyll").touch()
+    if args.diag_repository:
+        try:
+            diagnostics = latest_diagnostics(args.diag_repository, token)
+            (output / "diagnostic-index.json").write_text(json.dumps(diagnostics, ensure_ascii=False, indent=2) + "\n",
+                                                         encoding="utf-8")
+        except (RuntimeError, ValueError, OSError) as error:
+            print(f"Diagnostic refresh unavailable; retained bundled index: {error}", flush=True)
 
     print(
         f"Built firmware site with {len(catalog['releases'])} releases at {output}",

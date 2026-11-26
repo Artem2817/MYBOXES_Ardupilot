@@ -1,0 +1,33 @@
+name: MYBOX maintenance
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: maintenance-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  checks:
+    name: MYBOX maintenance checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Check catalog and repeatable release packaging
+        run: python3 -m unittest discover -s Tools/scripts/tests -p 'test_build_*.py'
+      - name: Check frontend compatibility and selection
+        run: node Tools/scripts/tests/test_firmware_frontend.cjs
+      - name: Check JavaScript syntax
+        run: |
+          for file in site/firmware-download/*.js; do node --check "$file"; done

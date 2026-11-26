@@ -17,7 +17,7 @@
       "application_address": "0x08020000",
       "end_exclusive": "0x081c0000",
       "hwdef_sha256": "58be36244ace1aaa8e176e2570ba24772382c17ddde902784cbd8135fe3a0e82",
-      "file": "diagnostics/MyboxDiag-0.2.1-MyboxH743_mini-with-bootloader.hex",
+      "file": "https://github.com/Artem2817/MYBOXES_Diag/releases/download/v0.2.2/MyboxDiag-0.2.1-MyboxH743_mini-with-bootloader.hex",
       "sha256": "6a2adb64a3575bae0fc606db60252569d7890d28f296546cc1b4e1bb4d66f9e2",
       "size": 1056004
     },
@@ -33,7 +33,7 @@
       "application_address": "0x08020000",
       "end_exclusive": "0x081c0000",
       "hwdef_sha256": "a39f872e09ff160bd94fa31530d313fec0cecc4b03e2b371be3d0d6f9a3ffad5",
-      "file": "diagnostics/MyboxDiag-0.2.1-MyboxH743_mini_v2-with-bootloader.hex",
+      "file": "https://github.com/Artem2817/MYBOXES_Diag/releases/download/v0.2.2/MyboxDiag-0.2.1-MyboxH743_mini_v2-with-bootloader.hex",
       "sha256": "b79a0ea4ed43e7716daea4a862488003d804959b817cc6d076c3ed0840aee971",
       "size": 1057200
     },
@@ -49,11 +49,14 @@
       "application_address": "0x08020000",
       "end_exclusive": "0x081c0000",
       "hwdef_sha256": "8cee6dc01d7bf1ae00b0805a5f6ab11ffbd6ea5be8fe3e357ff33b5b1762f3d2",
-      "file": "diagnostics/MyboxDiag-0.2.1-MyboxH743_mini_v2_vib-with-bootloader.hex",
+      "file": "https://github.com/Artem2817/MYBOXES_Diag/releases/download/v0.2.2/MyboxDiag-0.2.1-MyboxH743_mini_v2_vib-with-bootloader.hex",
       "sha256": "b299d27af2a2b85dc33d7838f63d86e6dd7c6b29027c8b4206ab76561c1fa477",
       "size": 1059840
     }
   ],
-  "windows_exe": "diagnostics/MyboxDiag-0.2.2-windows-x64.exe",
-  "windows_sha256": "8be4973444c9182f18a362e3d60806cb16c833c54ffbc924fef07f103a506438"
+  "windows_exe": "https://github.com/Artem2817/MYBOXES_Diag/releases/download/v0.2.2/MyboxDiag-0.2.2-windows-x64.exe",
+  "windows_sha256": "8be4973444c9182f18a362e3d60806cb16c833c54ffbc924fef07f103a506438",
+  "repository": "Artem2817/MYBOXES_Diag",
+  "release_url": "https://github.com/Artem2817/MYBOXES_Diag/releases/tag/v0.2.2",
+  "sources_url": "https://github.com/Artem2817/MYBOXES_Diag/tree/v0.2.2"
 }

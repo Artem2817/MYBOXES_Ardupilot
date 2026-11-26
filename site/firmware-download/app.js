@@ -1,28 +1,14 @@
-const query = new URLSearchParams(location.search);
-const allowed = {
-  firmware: new Set(["ardupilot", "inav"]),
-  board: new Set(["mini-v2", "mini-v2-vib", "mini", "pro"]),
-  vehicle: new Set(["copter", "plane", "rover"]),
-  channel: new Set(["all", "stable", "beta", "dev"]),
-};
-const queryValue = (name, fallback) => allowed[name].has(query.get(name)) ? query.get(name) : fallback;
-
-const initialFirmware = queryValue("firmware", "ardupilot");
-const initialBoard = queryValue("board", "mini-v2");
 const firmwareNames = { ardupilot: "ArduPilot", inav: "INAV" };
-
-const state = {
-  firmware: initialFirmware,
-  board: initialFirmware === "inav" && initialBoard === "pro" ? "mini-v2" : initialBoard,
-  vehicle: queryValue("vehicle", "copter"),
-  channel: queryValue("channel", "all"),
-  version: "latest",
-  catalog: null,
-};
+const state = { ...catalogModel.selectionFromUrl(location.search), catalog: null };
 
 const elements = {
   boardButtons: [...document.querySelectorAll(".board-button")],
   firmware: document.querySelector("#firmware-select"),
+  line: document.querySelector("#line-select"),
+  lineFilter: document.querySelector("#line-filter"),
+  selectionNote: document.querySelector("#selection-note"),
+  archive: document.querySelector("#release-archive"),
+  canUnavailable: document.querySelector("#can-unavailable"),
   firmwareName: document.querySelector("#firmware-name"),
   footerFirmware: document.querySelector("#footer-firmware"),
   ardupilotGuide: document.querySelector("#ardupilot-guide"),
@@ -64,36 +50,25 @@ function formatDate(value) {
 }
 
 function updateUrl() {
-  const params = new URLSearchParams({ firmware: state.firmware, board: state.board, channel: state.channel });
-  if (state.firmware === "ardupilot") params.set("vehicle", state.vehicle);
-  history.replaceState(null, "", `?${params}${location.hash}`);
+  history.replaceState(null, "", "?" + catalogModel.urlParams(state) + location.hash);
 }
 
 function releaseLabel(release) {
   return `${release.version}-r${release.revision} · ${release.channel.toUpperCase()}`;
 }
 
-function matchesSelection(release) {
-  return (release.firmware || "ardupilot") === state.firmware
-    && release.board === state.board
-    && (state.channel === "all" || release.channel === state.channel);
-}
-
-function matchingReleases() {
-  return state.catalog.releases.filter((release) =>
-    matchesSelection(release) && (state.version === "latest" || release.tag === state.version)
-  );
+function selectedCandidates() {
+  return catalogModel.candidates(state.catalog, state);
 }
 
 function refreshVersionOptions() {
+  const candidates = selectedCandidates();
   const previous = state.version;
-  const candidates = state.catalog.releases.filter(matchesSelection);
-  elements.version.replaceChildren(new Option("Последняя подходящая", "latest"));
-  for (const release of candidates) {
-    elements.version.add(new Option(releaseLabel(release), release.tag));
-  }
-  state.version = candidates.some((release) => release.tag === previous) ? previous : "latest";
+  elements.version.replaceChildren(new Option("Последний выпуск выбранного канала", "latest"));
+  for (const release of candidates) elements.version.add(new Option(releaseLabel(release), release.tag));
+  state.version = candidates.some(r => r.tag === previous) ? previous : "latest";
   elements.version.value = state.version;
+  if (state.version !== "latest") elements.archive.open = true;
 }
 
 function assetLink(asset, compact = false) {
@@ -114,14 +89,10 @@ function assetLink(asset, compact = false) {
   const copy = document.createElement("span");
   const title = document.createElement("strong");
   const detail = document.createElement("small");
-  const arrow = document.createElement("span");
   title.textContent = text[0];
   detail.textContent = `${text[1]} · ${formatBytes(asset.size)}`;
-  arrow.className = "download-arrow";
-  arrow.setAttribute("aria-hidden", "true");
-  arrow.textContent = "↓";
   copy.append(title, detail);
-  link.append(copy, arrow);
+  link.append(copy);
   return link;
 }
 
@@ -165,7 +136,16 @@ function renderRelease(release) {
   const headingTitle = document.createElement("h3");
   const headingCopy = document.createElement("span");
   headingTitle.textContent = inav ? "INAV" : state.vehicle[0].toUpperCase() + state.vehicle.slice(1);
-  headingCopy.textContent = release.bench_only ? "Стендовая сборка · PWM" : "Прошивка основного STM32H743";
+  headingCopy.textContent = inav ? "Единый HEX · тип аппарата выбирается в Mixer" : "Прошивка основного STM32H743";
+  if (inav) {
+    const support = document.createElement("p");
+    support.className = "release-support";
+    const caps = catalogModel.capabilities(release);
+    support.textContent = ["Configurator " + (release.version.startsWith("9.") ? "9.1" : "10.0"),
+      caps.dshot ? "PWM и DShot" : "PWM", caps.can ? "DroneCAN GPS / компас" : "",
+      caps.imuReserve ? "Автоматический резерв IMU" : ""].filter(Boolean).join(" · ");
+    vehicleSection.append(support);
+  }
   heading.append(headingTitle, headingCopy);
   const buttons = document.createElement("div");
   buttons.className = "download-buttons";
@@ -188,28 +168,46 @@ function renderRelease(release) {
   if (release.board === "pro") {
     const iomcu = release.assets.filter((asset) => asset.component === "iomcu");
     componentGrid.append(componentCard("IOMCU STM32F103", "IO firmware, собранная из того же коммита, что и основной образ Pro.", iomcu));
-  } else {
-    const metadata = release.assets.filter((asset) => asset.component === "metadata");
-    componentGrid.append(componentCard("Проверка файлов", "Манифест сборки и контрольные суммы SHA-256.", metadata));
   }
+  const metadata = release.assets.filter((asset) => asset.component === "metadata");
+  componentGrid.append(componentCard("Проверка файлов", "Манифест сборки и контрольные суммы SHA-256.", metadata));
   return fragment;
 }
 
 function render() {
-  updateUrl();
-  if (!state.catalog) return;
+  if (!state.catalog) { updateUrl(); return; }
   refreshVersionOptions();
+  updateUrl();
   elements.count.textContent = state.catalog.releases.filter(
     (release) => (release.firmware || "ardupilot") === state.firmware
   ).length;
   elements.repo.href = state.catalog.repositories?.[state.firmware] || state.catalog.repository_url;
   elements.list.replaceChildren();
-  const releases = matchingReleases();
-  const visible = state.version === "latest" ? releases.slice(0, 1) : releases;
+  const releases = selectedCandidates();
+  const visible = state.version === "latest" ? releases.slice(0, 1) : releases.filter(r => r.tag === state.version);
+  const current = visible[0] || null;
+  const caps = catalogModel.capabilities(current);
+  elements.canGuide.hidden = !caps.can;
+  elements.canUnavailable.hidden = state.firmware !== "inav" || caps.can;
+  if (!elements.canUnavailable.hidden) {
+    elements.canUnavailable.textContent = current
+      ? "Для этой версии: GPS подключается по UART, внешний компас — по I²C. Инструкция GPS/компаса DroneCAN доступна в линии INAV 10."
+      : "Выберите выпуск, чтобы увидеть подходящие инструкции подключения.";
+  }
+  elements.selectionNote.textContent = state.firmware === "inav"
+    ? (state.line === "9" ? "INAV 9.1 · Configurator 9.1. Stable — проверенная r15; новые изменения доступны в Dev."
+      : "INAV 10 · основа 10.0.0-rc2, Configurator 10.0. Новые возможности выходят в Dev; Stable этой линии пока нет.")
+    : "ArduPilot: выберите тип аппарата. Канал указан у каждого выпуска; опубликованных Stable пока нет.";
+  document.dispatchEvent(new CustomEvent("mybox:selection", { detail: {
+    firmware: state.firmware, board: state.board, line: state.line, release: current, capabilities: caps
+  }}));
   if (!visible.length) {
     const empty = document.createElement("div");
     empty.className = "status-card";
-    empty.innerHTML = "<div><strong>Подходящих релизов пока нет</strong><span>Выберите другой канал или плату.</span></div>";
+    const box = document.createElement("div"), title = document.createElement("strong"), hint = document.createElement("span");
+    title.textContent = state.channel === "stable" ? "Stable для этой линии и платы пока нет" : "Подходящих релизов пока нет";
+    hint.textContent = "Выберите другой канал. Dev и Beta доступны отдельно; статус выпуска не меняется автоматически.";
+    box.append(title, hint); empty.append(box);
     elements.list.append(empty);
   } else {
     for (const release of visible) elements.list.append(renderRelease(release));
@@ -231,7 +229,8 @@ function applyStateToControls() {
   elements.vehicleFilter.hidden = inav;
   elements.ardupilotGuide.hidden = inav;
   elements.inavGuide.hidden = !inav;
-  elements.canGuide.hidden = !inav;
+  elements.lineFilter.hidden = !inav;
+  elements.line.value = state.line;
   elements.vibDescription.textContent = inav ? "С виброизоляцией · выносной модуль" : "С виброизоляцией · два IMU";
   elements.vehicle.value = state.vehicle;
   elements.channel.value = state.channel;
@@ -247,7 +246,7 @@ async function refreshPublishedReleases() {
     const updated = await liveCatalog.refresh(state.catalog);
     if (updated) {
       state.catalog = updated;
-      elements.time.textContent = `Релизы проверены ${new Date().toLocaleTimeString("ru-RU")}`;
+      elements.time.textContent = (updated.live_refresh?.failed.length ? "Часть каталога проверена " : "Релизы проверены ") + new Date().toLocaleTimeString("ru-RU");
       render();
     }
   } finally {
@@ -290,7 +289,14 @@ elements.firmware.addEventListener("change", () => {
   state.firmware = elements.firmware.value;
   if (state.firmware === "inav" && state.board === "pro") state.board = "mini-v2";
   state.version = "latest";
-  state.channel = "all";
+  state.channel = state.firmware === "inav" ? (state.line === "9" ? "stable" : "dev") : "all";
+  applyStateToControls();
+  render();
+});
+elements.line.addEventListener("change", () => {
+  state.line = elements.line.value;
+  state.channel = state.line === "9" ? "stable" : "dev";
+  state.version = "latest";
   applyStateToControls();
   render();
 });

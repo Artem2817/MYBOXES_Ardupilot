@@ -9,6 +9,7 @@ on:
       - .github/workflows/firmware-download-site.yml
       - Tools/scripts/build_firmware_site.py
       - Tools/scripts/tests/test_build_firmware_site.py
+      - Tools/scripts/tests/test_firmware_frontend.cjs
       - site/firmware-download/**
   workflow_run:
     workflows:
@@ -53,6 +54,7 @@ jobs:
           python3 Tools/scripts/build_firmware_site.py
           --repository "$GITHUB_REPOSITORY"
           --inav-repository Artem2817/MYBOXES_INAV
+          --diag-repository Artem2817/MYBOXES_Diag
           --source site/firmware-download
           --output _site
 

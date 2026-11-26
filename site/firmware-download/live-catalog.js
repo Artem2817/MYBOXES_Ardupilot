@@ -37,20 +37,29 @@ const liveCatalog = (() => {
   }
   async function refresh(catalog, request = fetch) {
     const sources = { ardupilot: "Artem2817/MYBOXES_Ardupilot", inav: "Artem2817/MYBOXES_INAV" };
-    const results = await Promise.allSettled(Object.entries(sources).map(async ([firmware, repo]) => {
-      const response = await request(`https://api.github.com/repos/${repo}/releases?per_page=100`,
-        { cache: "no-store", headers: { Accept: "application/vnd.github+json" }, signal: AbortSignal.timeout(12000) });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const releases = await response.json();
-      if (!Array.isArray(releases)) throw new Error("Invalid releases response");
-      return releases.map(r => normalize(r, firmware)).filter(Boolean);
+    const entries = Object.entries(sources);
+    const results = await Promise.allSettled(entries.map(async ([firmware, repo]) => {
+      const releases = [];
+      for (let page = 1; page <= 20; page++) {
+        const response = await request("https://api.github.com/repos/" + repo + "/releases?per_page=100&page=" + page,
+          { cache: "no-store", headers: { Accept: "application/vnd.github+json" }, signal: AbortSignal.timeout(12000) });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const batch = await response.json();
+        if (!Array.isArray(batch)) throw new Error("Invalid releases response");
+        releases.push(...batch);
+        if (batch.length < 100) return releases.map(r => normalize(r, firmware)).filter(Boolean);
+      }
+      throw new Error("Release pagination limit reached");
     }));
     if (!results.some(r => r.status === "fulfilled")) return null;
-    const merged = new Map(catalog.releases.map(r => [`${r.firmware || "ardupilot"}:${r.tag}`, r]));
+    const successful = results.flatMap((r, i) => r.status === "fulfilled" ? [entries[i][0]] : []);
+    const merged = new Map(catalog.releases.filter(r => !successful.includes(r.firmware || "ardupilot"))
+      .map(r => [(r.firmware || "ardupilot") + ":" + r.tag, r]));
     for (const result of results) if (result.status === "fulfilled") {
-      for (const release of result.value) merged.set(`${release.firmware}:${release.tag}`, release);
+      for (const release of result.value) merged.set(release.firmware + ":" + release.tag, release);
     }
-    return { ...catalog, releases: [...merged.values()].sort(compare) };
+    return { ...catalog, releases: [...merged.values()].sort(compare), live_refresh: { successful,
+      failed: entries.map(([firmware]) => firmware).filter(firmware => !successful.includes(firmware)) } };
   }
   return { normalize, compare, refresh };
 })();

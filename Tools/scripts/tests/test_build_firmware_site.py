@@ -3,6 +3,7 @@
 # AP_FLAKE8_CLEAN
 import importlib.util
 import unittest
+import json
 from pathlib import Path
 from unittest.mock import patch
 
@@ -21,6 +22,17 @@ class FirmwareCatalogTests(unittest.TestCase):
         tag = f'myboxh743-{variant}-4.7.1-r1{suffix}'
         return {'tag_name': tag, 'html_url': f'https://github.com/example/repo/releases/tag/{tag}',
                 'prerelease': channel != 'stable', 'assets': []}
+
+    def test_diagnostic_index_requires_all_boards_and_own_release_urls(self):
+        source = Path(__file__).resolve().parents[3] / "site/firmware-download/diagnostic-index.json"
+        index = json.loads(source.read_text())
+        self.assertEqual(SITE.validate_diagnostics(index, "Artem2817/MYBOXES_Diag")["version"], "0.2.2")
+        index["profiles"][0]["file"] = "https://example.com/wrong.hex"
+        with self.assertRaisesRegex(ValueError, "download"):
+            SITE.validate_diagnostics(index, "Artem2817/MYBOXES_Diag")
+        index["profiles"].pop()
+        with self.assertRaisesRegex(ValueError, "matrix"):
+            SITE.validate_diagnostics(index, "Artem2817/MYBOXES_Diag")
 
     def test_all_models_and_channels(self):
         """New variant tags must not match the legacy Mini/Pro names."""
